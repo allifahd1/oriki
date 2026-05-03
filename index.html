@@ -1,0 +1,2990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Oriki Archive</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --bg:#ffffff; --bg2:#f5f5f4; --bg3:#fafaf9;
+      --ink:#1c1917; --ink2:#57534e; --ink3:#a8a29e;
+      --border:#e7e5e4; --border2:#d6d3d1;
+      --amber:#B5651D; --amber-light:#FAC775; --amber-pale:#FEF3C7;
+      --green:#059669; --green-bg:#D1FAE5; --green-dark:#065F46;
+      --blue:#2563EB; --blue-bg:#DBEAFE;
+      --red:#DC2626; --red-bg:#FEE2E2;
+      --gold:#D97706; --gold-bg:#FEF9C3;
+      --purple-bg:#CECBF6; --purple:#26215C;
+      --cyan-bg:#CFFAFE; --cyan:#164E63;
+      --r-md:8px; --r-lg:14px; --r-xl:18px;
+    }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:var(--font-sans);background:var(--bg3);padding:1rem;max-width:520px;margin:0 auto;}
+    .frame{background:var(--bg2);border-radius:var(--r-xl);border:0.5px solid var(--border);padding:1.25rem;}
+
+    /* NAV */
+    .nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;padding-bottom:1rem;border-bottom:0.5px solid var(--border);flex-wrap:wrap;gap:8px;}
+    .logo{font-size:19px;font-weight:700;color:var(--ink);letter-spacing:-0.03em;}
+    .logo span{color:var(--amber);}
+    .nav-links{display:flex;gap:4px;flex-wrap:wrap;}
+    .nb{background:none;border:none;cursor:pointer;font-size:12px;font-family:var(--font-sans);color:var(--ink2);padding:4px 10px;border-radius:20px;transition:all 0.15s;}
+    .nb:hover{background:var(--bg);color:var(--ink);}
+    .nb.active{background:var(--amber);color:#fff;font-weight:600;}
+    .nb.submit-nb{background:var(--ink);color:#fff;}
+
+    /* TABS */
+    .tab{display:none;}.tab.active{display:block;}
+
+    /* HERO */
+    .hero{margin-bottom:1.25rem;}
+    .hero-title{font-size:20px;font-weight:700;color:var(--ink);line-height:1.3;margin-bottom:5px;}
+    .hero-sub{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:1rem;}
+    .search-row{display:flex;gap:8px;}
+    .search-row input{flex:1;font-size:13px;padding:8px 12px;border-radius:var(--r-md);border:0.5px solid var(--border2);background:var(--bg);color:var(--ink);font-family:var(--font-sans);outline:none;}
+    .search-row input:focus{border-color:var(--amber);}
+    .search-row button{padding:8px 16px;font-size:13px;background:var(--amber);color:#fff;border:none;border-radius:var(--r-md);cursor:pointer;font-weight:500;font-family:var(--font-sans);}
+
+    /* STATS */
+    .stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1.25rem;}
+    .stat-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-md);padding:10px 12px;}
+    .stat-num{font-size:18px;font-weight:700;color:var(--ink);}
+    .stat-lbl{font-size:10px;color:var(--ink3);margin-top:2px;text-transform:uppercase;letter-spacing:0.05em;}
+
+    /* FILTERS */
+    .section-title{font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:0.6rem;text-transform:uppercase;letter-spacing:0.08em;}
+    .filter-row{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:1rem;}
+    .pill{font-size:12px;padding:4px 12px;border-radius:20px;border:0.5px solid var(--border2);color:var(--ink2);background:var(--bg);cursor:pointer;font-family:var(--font-sans);transition:all 0.15s;}
+    .pill:hover{border-color:var(--amber);color:var(--amber);}
+    .pill.active{background:var(--amber);color:#fff;border-color:var(--amber);}
+
+    /* TIER TOGGLE */
+    .tier-toggle{display:flex;margin-bottom:1rem;border:0.5px solid var(--border2);border-radius:var(--r-md);overflow:hidden;}
+    .tier-btn{flex:1;padding:7px 8px;font-size:12px;border:none;background:var(--bg);cursor:pointer;font-family:var(--font-sans);color:var(--ink2);transition:all 0.15s;border-right:0.5px solid var(--border2);}
+    .tier-btn:last-child{border-right:none;}
+    .tier-btn.active{background:var(--amber);color:#fff;font-weight:500;}
+    .tier-btn.v-tier.active{background:var(--gold);color:#fff;}
+
+    /* ENTRY CARDS */
+    .entry-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.125rem;margin-bottom:10px;cursor:pointer;transition:box-shadow 0.15s;}
+    .entry-card:hover{box-shadow:0 2px 12px rgba(0,0,0,0.07);}
+    .entry-card.is-verified{border-left:3px solid var(--gold);}
+    .entry-card.is-disputed{border-left:3px solid var(--red);}
+    .ec-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:8px;}
+    .ec-name{font-size:14px;font-weight:600;color:var(--ink);line-height:1.3;}
+    .type-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;white-space:nowrap;flex-shrink:0;}
+    .t-family{background:#FAC775;color:#633806;}
+    .t-town{background:#9FE1CB;color:#085041;}
+    .t-kingdom{background:#F5C4B3;color:#4A1B0C;}
+    .t-deity{background:var(--purple-bg);color:var(--purple);}
+    .t-occupation{background:var(--green-bg);color:var(--green-dark);}
+    .t-personal{background:var(--amber-pale);color:#92400E;}
+    .t-warrior{background:#FEE2E2;color:#7F1D1D;}
+    .t-hunter{background:#FEF9C3;color:#713F12;}
+    .t-lineage{background:#FCE7F3;color:#831843;}
+    .t-owe{background:var(--cyan-bg);color:var(--cyan);}
+    .t-default{background:#E5E7EB;color:#374151;}
+    .ec-meta{font-size:11px;color:var(--ink3);margin-bottom:7px;}
+    .ec-snippet{font-size:13px;color:var(--ink2);font-style:italic;line-height:1.6;border-left:2px solid var(--amber-light);padding-left:10px;margin-bottom:10px;}
+
+    /* TRUST BADGES */
+    .trust-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px;}
+    .tbadge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;}
+    .tb-verified{background:var(--gold-bg);color:var(--gold);border:0.5px solid var(--gold);}
+    .tb-community{background:var(--bg2);color:var(--ink3);border:0.5px solid var(--border2);}
+    .tb-nominated{background:var(--blue-bg);color:var(--blue);border:0.5px solid var(--blue);}
+    .tb-disputed{background:var(--red-bg);color:var(--red);border:0.5px solid var(--red);}
+
+    /* INTERACTION BAR */
+    .ibar{display:flex;align-items:center;gap:6px;padding-top:8px;border-top:0.5px solid var(--border);flex-wrap:wrap;}
+    .ib{display:flex;align-items:center;gap:4px;font-size:12px;color:var(--ink3);background:none;border:0.5px solid var(--border);border-radius:20px;padding:3px 10px;cursor:pointer;font-family:var(--font-sans);transition:all 0.15s;}
+    .ib:hover{border-color:var(--amber);color:var(--amber);}
+    .ib.on-endorse{background:var(--green-bg);color:var(--green-dark);border-color:var(--green);}
+    .ib.on-dispute{background:var(--red-bg);color:var(--red);border-color:var(--red);}
+    .ib.on-nominate{background:var(--blue-bg);color:var(--blue);border-color:var(--blue);}
+    .ib-spacer{flex:1;}
+    .view-btn{font-size:11px;color:var(--amber);background:none;border:none;cursor:pointer;font-family:var(--font-sans);text-decoration:underline;}
+
+    /* OWE CARDS */
+    .owe-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.125rem;margin-bottom:10px;}
+    .owe-yoruba{font-size:15px;font-style:italic;color:var(--ink);line-height:1.7;margin-bottom:8px;border-left:2px solid #67E8F9;padding-left:10px;}
+    .owe-literal{font-size:12px;color:var(--ink2);margin-bottom:4px;}
+    .owe-meaning{font-size:12px;color:var(--green-dark);background:var(--green-bg);padding:5px 10px;border-radius:var(--r-md);line-height:1.6;}
+
+    /* FESTIVAL CARDS */
+    .fest-hero-band{background:linear-gradient(135deg,#3D1A0A 0%,#B5651D 100%);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:1rem;color:#fff;}
+    .fhb-title{font-size:20px;font-weight:700;margin-bottom:4px;}
+    .fhb-sub{font-size:12px;opacity:0.8;line-height:1.6;margin-bottom:1rem;}
+    .fhb-search{display:flex;gap:8px;}
+    .fhb-search input{flex:1;font-size:13px;padding:8px 12px;border-radius:var(--r-md);border:none;background:rgba(255,255,255,0.18);color:#fff;font-family:var(--font-sans);outline:none;}
+    .fhb-search input::placeholder{color:rgba(255,255,255,0.6);}
+    .fhb-search button{padding:8px 16px;font-size:13px;background:#fff;color:var(--amber);border:none;border-radius:var(--r-md);cursor:pointer;font-weight:700;font-family:var(--font-sans);}
+    .upcoming-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-bottom:1rem;scrollbar-width:none;}
+    .upcoming-row::-webkit-scrollbar{display:none;}
+    .uc{flex-shrink:0;background:var(--amber-pale);border:0.5px solid var(--amber-light);border-radius:var(--r-md);padding:8px 12px;cursor:pointer;transition:all 0.15s;}
+    .uc:hover{background:var(--amber);color:#fff;}
+    .uc-name{font-size:12px;font-weight:600;color:var(--ink);white-space:nowrap;}
+    .uc-month{font-size:11px;color:var(--amber);margin-top:2px;}
+    .uc:hover .uc-name,.uc:hover .uc-month{color:#fff;}
+    .fest-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);margin-bottom:12px;overflow:hidden;cursor:pointer;transition:box-shadow 0.15s;}
+    .fest-card:hover{box-shadow:0 3px 16px rgba(0,0,0,0.08);}
+    .fest-banner{height:6px;}
+    .fest-body{padding:1rem 1.125rem;}
+    .fest-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:8px;}
+    .fest-name{font-size:15px;font-weight:700;color:var(--ink);line-height:1.3;}
+    .fest-date-pill{font-size:11px;background:var(--amber-pale);color:var(--amber);padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;font-weight:600;}
+    .fest-loc{font-size:12px;color:var(--ink3);margin-bottom:6px;}
+    .fest-tags{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
+    .ft{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;}
+    .ft-royal{background:#F5C4B3;color:#4A1B0C;}
+    .ft-deity{background:var(--purple-bg);color:var(--purple);}
+    .ft-ancestral{background:var(--green-bg);color:var(--green-dark);}
+    .ft-harvest{background:#FEF9C3;color:#713F12;}
+    .ft-heritage{background:var(--blue-bg);color:var(--blue);}
+    .ft-diaspora{background:#FCE7F3;color:#831843;}
+    .fest-sig{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:10px;}
+    .fest-footer{display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:0.5px solid var(--border);}
+    .attend-btn{font-size:12px;background:var(--amber);color:#fff;border:none;border-radius:var(--r-md);padding:5px 14px;cursor:pointer;font-family:var(--font-sans);font-weight:500;}
+    .oriki-link-btn{font-size:11px;color:var(--amber);text-decoration:underline;cursor:pointer;background:none;border:none;font-family:var(--font-sans);}
+    .unesco-pill{font-size:10px;background:var(--blue-bg);color:var(--blue);padding:2px 8px;border-radius:20px;font-weight:600;}
+
+    /* FESTIVAL DETAIL */
+    .fd-banner{height:80px;border-radius:var(--r-lg);margin-bottom:1rem;display:flex;align-items:flex-end;padding:1rem;}
+    .fd-title{font-size:22px;font-weight:700;color:#fff;text-shadow:0 1px 4px rgba(0,0,0,0.4);}
+    .fd-section{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.25rem;margin-bottom:10px;}
+    .fd-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink3);margin-bottom:8px;}
+    .fd-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .fd-cell{background:var(--bg2);border-radius:var(--r-md);padding:8px 10px;}
+    .fd-cell-label{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;}
+    .fd-cell-value{font-size:13px;font-weight:600;color:var(--ink);}
+    .fd-text{font-size:13px;color:var(--ink2);line-height:1.75;}
+    .timeline{display:flex;flex-direction:column;gap:8px;}
+    .t-day{display:flex;gap:10px;}
+    .t-day-num{width:28px;height:28px;border-radius:50%;background:var(--amber);color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+    .t-day-title{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:2px;}
+    .t-day-desc{font-size:12px;color:var(--ink2);line-height:1.6;}
+    .travel-list{display:flex;flex-direction:column;gap:6px;}
+    .tl-item{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--ink2);line-height:1.6;}
+    .tl-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+    .cite-box{background:var(--blue-bg);border-radius:var(--r-md);padding:10px 12px;font-size:12px;color:var(--blue);font-style:italic;line-height:1.6;}
+    .plan-btn{width:100%;padding:11px;background:var(--amber);color:#fff;border:none;border-radius:var(--r-md);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-sans);margin-top:8px;}
+
+    /* DETAIL VIEW */
+    .back-btn{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--ink2);cursor:pointer;background:none;border:none;font-family:var(--font-sans);margin-bottom:1rem;padding:0;}
+    .back-btn:hover{color:var(--amber);}
+    .detail-title{font-size:20px;font-weight:700;color:var(--ink);margin-bottom:8px;line-height:1.3;}
+    .detail-meta-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
+    .d-block{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.25rem;margin-bottom:10px;}
+    .d-block-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--ink3);margin-bottom:8px;}
+    .oriki-full{font-size:15px;line-height:2;color:var(--ink);font-style:italic;}
+    .trans-text{font-size:13px;color:var(--ink2);line-height:1.8;}
+    .variant-notice{background:var(--purple-bg);border-radius:var(--r-md);padding:8px 12px;font-size:12px;color:var(--purple);margin-bottom:10px;}
+    .variant-btn{font-size:11px;color:var(--purple);background:none;border:0.5px solid var(--purple);border-radius:var(--r-md);padding:3px 10px;cursor:pointer;font-family:var(--font-sans);margin-top:4px;}
+
+    /* COMMENTS */
+    .comment-item{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-md);padding:10px 12px;margin-bottom:8px;}
+    .ci-header{display:flex;justify-content:space-between;margin-bottom:4px;}
+    .ci-author{font-size:12px;font-weight:600;color:var(--ink);}
+    .ci-time{font-size:11px;color:var(--ink3);}
+    .ci-text{font-size:13px;color:var(--ink2);line-height:1.6;margin-bottom:4px;}
+    .ci-type{font-size:10px;padding:1px 6px;border-radius:10px;margin-right:4px;}
+    .cit-dispute{background:var(--red-bg);color:var(--red);}
+    .cit-correction{background:var(--blue-bg);color:var(--blue);}
+    .cit-context{background:var(--green-bg);color:var(--green-dark);}
+    .comment-form{margin-top:12px;}
+    .comment-form textarea{width:100%;font-size:13px;padding:8px 12px;border-radius:var(--r-md);border:0.5px solid var(--border2);background:var(--bg);font-family:var(--font-sans);resize:none;height:70px;line-height:1.6;color:var(--ink);outline:none;}
+    .comment-form textarea:focus{border-color:var(--amber);}
+    .ct-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+    .ct-pill{font-size:11px;padding:3px 10px;border-radius:20px;border:0.5px solid var(--border2);cursor:pointer;font-family:var(--font-sans);background:var(--bg);color:var(--ink2);}
+    .ct-pill.active{background:var(--amber);color:#fff;border-color:var(--amber);}
+    .comment-submit-row{display:flex;gap:8px;align-items:center;}
+    .cn-input{flex:1;font-size:12px;padding:6px 10px;border-radius:var(--r-md);border:0.5px solid var(--border2);background:var(--bg);font-family:var(--font-sans);color:var(--ink);outline:none;}
+    .post-btn{padding:6px 16px;font-size:12px;background:var(--amber);color:#fff;border:none;border-radius:var(--r-md);cursor:pointer;font-weight:500;font-family:var(--font-sans);white-space:nowrap;}
+
+    /* SUBMIT FORM */
+    .stt{display:flex;margin-bottom:1.25rem;border:0.5px solid var(--border2);border-radius:var(--r-md);overflow:hidden;}
+    .stt-btn{flex:1;padding:9px;font-size:12px;border:none;background:var(--bg);cursor:pointer;font-family:var(--font-sans);color:var(--ink2);transition:all 0.15s;border-right:0.5px solid var(--border2);}
+    .stt-btn:last-child{border-right:none;}
+    .stt-btn.active{background:var(--amber);color:#fff;font-weight:500;}
+    .fg{margin-bottom:0.9rem;}
+    .fl{font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:4px;display:block;text-transform:uppercase;letter-spacing:0.06em;}
+    .fi,.fs,.ft-area{width:100%;font-size:13px;padding:8px 12px;border-radius:var(--r-md);border:0.5px solid var(--border2);background:var(--bg);color:var(--ink);font-family:var(--font-sans);outline:none;}
+    .fi:focus,.fs:focus,.ft-area:focus{border-color:var(--amber);}
+    .ft-area{resize:vertical;min-height:80px;line-height:1.6;}
+    .ft-area.tall{min-height:110px;font-style:italic;}
+    .form-2col{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+    .source-box{background:var(--blue-bg);border-radius:var(--r-md);padding:10px 12px;margin-bottom:1rem;}
+    .source-box-title{font-size:11px;font-weight:600;color:var(--blue);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
+    .source-note{font-size:11px;color:var(--blue);margin-bottom:8px;line-height:1.5;}
+    .form-hint{font-size:11px;color:var(--ink3);margin-top:3px;line-height:1.5;}
+    .submit-btn{width:100%;padding:11px;background:var(--amber);color:#fff;border:none;border-radius:var(--r-md);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-sans);margin-top:0.5rem;}
+    .submit-btn:hover{opacity:0.88;}
+    .submit-btn:disabled{opacity:0.55;cursor:not-allowed;}
+
+    /* LEARN */
+    .learn-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:1rem;margin-bottom:10px;}
+    .learn-card h3{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:8px;}
+    .alpha-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-top:6px;}
+    .alpha-cell{background:var(--bg3);border:0.5px solid var(--border);border-radius:6px;padding:6px 4px;text-align:center;font-size:14px;font-weight:600;color:var(--amber);}
+    .num-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:6px;}
+    .num-cell{background:var(--bg3);border:0.5px solid var(--border);border-radius:6px;padding:6px 10px;display:flex;justify-content:space-between;font-size:12px;}
+    .num-cell strong{color:var(--amber);font-weight:600;}
+
+    /* MAP */
+    .map-wrap{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:10px;}
+    .map-grid{display:grid;grid-template-columns:repeat(8,1fr);gap:3px;height:120px;margin-bottom:10px;}
+    .mc{border-radius:2px;background:var(--bg);border:0.5px solid var(--border);}
+    .mc.rich{background:var(--amber);}
+    .mc.some{background:var(--amber);opacity:0.5;}
+    .mc.risk{background:#F0997B;opacity:0.6;}
+    .map-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--ink2);}
+    .leg-dot{width:8px;height:8px;border-radius:2px;display:inline-block;margin-right:4px;vertical-align:middle;}
+
+    /* STATES */
+    .state-msg{font-size:13px;color:var(--ink3);text-align:center;padding:2rem 0;line-height:1.7;}
+    .err{font-size:13px;color:var(--red);background:var(--red-bg);border-radius:var(--r-md);padding:.75rem 1rem;margin-bottom:1rem;}
+    .ok{font-size:13px;color:var(--green-dark);background:var(--green-bg);border-radius:var(--r-md);padding:.75rem 1rem;margin-bottom:1rem;}
+    .subtle-link{color:var(--amber);cursor:pointer;background:none;border:none;font-family:var(--font-sans);font-size:inherit;text-decoration:underline;}
+  
+    /* ── ORIKI LINKS ── */
+    .links-section{margin-bottom:10px;}
+    .link-card{display:flex;align-items:flex-start;gap:10px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-md);padding:10px 12px;margin-bottom:6px;cursor:pointer;transition:box-shadow 0.15s;}
+    .link-card:hover{box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+    .link-type-badge{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;flex-shrink:0;margin-top:2px;}
+    .lt-variant{background:#F5C4B3;color:#4A1B0C;}
+    .lt-shared_ancestor{background:#D1FAE5;color:#065F46;}
+    .lt-same_lineage{background:#DBEAFE;color:#1D4ED8;}
+    .lt-same_deity{background:#CECBF6;color:#26215C;}
+    .lt-migration_link{background:#FCE7F3;color:#831843;}
+    .lt-contradicts{background:#FEE2E2;color:#7F1D1D;}
+    .lt-default{background:#E5E7EB;color:#374151;}
+    .link-info{flex:1;}
+    .link-name{font-size:13px;font-weight:600;color:var(--ink);}
+    .link-note{font-size:12px;color:var(--ink3);margin-top:2px;}
+    .add-link-form{background:var(--bg2);border-radius:var(--r-md);padding:10px 12px;margin-top:8px;}
+    .add-link-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.06em;color:var(--ink2);margin-bottom:8px;}
+
+  
+    /* ── TOOLTIPS ── */
+    [data-tip] { position: relative; }
+    [data-tip]::after {
+      content: attr(data-tip);
+      position: absolute;
+      bottom: calc(100% + 6px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--ink);
+      color: #fff;
+      font-size: 11px;
+      font-family: var(--font-sans);
+      white-space: nowrap;
+      padding: 4px 10px;
+      border-radius: 6px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+      z-index: 999;
+      font-weight: 400;
+      letter-spacing: 0;
+      max-width: 220px;
+      white-space: normal;
+      text-align: center;
+      line-height: 1.4;
+    }
+    [data-tip]::before {
+      content: '';
+      position: absolute;
+      bottom: calc(100% + 2px);
+      left: 50%;
+      transform: translateX(-50%);
+      border: 4px solid transparent;
+      border-top-color: var(--ink);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s;
+      z-index: 999;
+    }
+    [data-tip]:hover::after,
+    [data-tip]:hover::before { opacity: 1; }
+
+  
+    /* ── AUDIO PLAYER ── */
+    .audio-upload-zone{border:1.5px dashed var(--border2);border-radius:var(--r-md);padding:1.25rem;text-align:center;background:var(--bg2);cursor:pointer;transition:border-color 0.2s;margin-bottom:0.5rem;}
+    .audio-upload-zone:hover{border-color:var(--amber);}
+    .audio-upload-zone input[type=file]{display:none;}
+    .upload-icon-circle{width:36px;height:36px;border-radius:50%;background:var(--bg);border:0.5px solid var(--border2);display:flex;align-items:center;justify-content:center;margin:0 auto 8px;font-size:18px;}
+    .upload-text{font-size:13px;color:var(--ink3);line-height:1.6;}
+    .upload-hint{font-size:11px;color:var(--ink3);margin-top:4px;}
+    .audio-selected{font-size:12px;color:var(--green-dark);background:var(--green-bg);padding:4px 10px;border-radius:var(--r-md);margin-top:4px;display:none;}
+
+    .audio-player-wrap{background:var(--amber-pale);border:0.5px solid var(--amber-light);border-radius:var(--r-md);padding:10px 14px;display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+    .play-pause-btn{width:32px;height:32px;border-radius:50%;background:var(--amber);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity 0.15s;}
+    .play-pause-btn:hover{opacity:0.85;}
+    .play-pause-btn svg{width:12px;height:12px;fill:#fff;margin-left:2px;}
+    .waveform-bars{flex:1;height:28px;display:flex;align-items:center;gap:2px;}
+    .wb{width:3px;border-radius:2px;background:var(--amber-light);transition:background 0.1s;}
+    .wb.played{background:var(--amber);}
+    .audio-dur{font-size:11px;color:var(--amber);font-weight:600;flex-shrink:0;}
+    .no-audio{font-size:12px;color:var(--ink3);font-style:italic;}
+
+    /* ── DICTIONARY TAB ── */
+    .dict-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.125rem;margin-bottom:10px;}
+    .dict-word{font-size:18px;font-weight:700;color:var(--amber);font-style:italic;margin-bottom:4px;}
+    .dict-pos{font-size:11px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
+    .dict-meaning{font-size:14px;color:var(--ink);margin-bottom:6px;line-height:1.6;}
+    .dict-example{font-size:12px;color:var(--ink2);font-style:italic;border-left:2px solid var(--amber-light);padding-left:8px;line-height:1.6;}
+    .dict-meta{font-size:11px;color:var(--ink3);margin-top:6px;}
+
+    /* ── MAP (live) ── */
+    .map-state-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
+    .map-state-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-md);padding:10px 12px;cursor:pointer;transition:all 0.15s;}
+    .map-state-card:hover{border-color:var(--amber);}
+    .ms-name{font-size:13px;font-weight:600;color:var(--ink);margin-bottom:3px;}
+    .ms-count{font-size:11px;color:var(--ink3);margin-bottom:5px;}
+    .ms-bar{height:4px;border-radius:2px;background:var(--bg3);}
+    .ms-bar-fill{height:100%;border-radius:2px;background:var(--amber);transition:width 0.4s;}
+    .ms-risk .ms-bar-fill{background:#E8825A;}
+    .ms-none .ms-bar-fill{background:var(--bg3);}
+    .map-alert{background:#FFF3F0;border:0.5px solid #F5C4B3;border-radius:var(--r-md);padding:10px 14px;font-size:13px;color:var(--ink2);line-height:1.7;margin-bottom:1rem;}
+    .map-alert strong{color:var(--red);}
+    .map-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
+
+    /* ── ABOUT PANEL ── */
+    .about-hero{background:linear-gradient(135deg,#1C1410 0%,#3D1A0A 60%,#B5651D 100%);border-radius:var(--r-lg);padding:1.5rem;margin-bottom:1rem;color:#fff;}
+    .about-hero-title{font-size:22px;font-weight:700;margin-bottom:6px;letter-spacing:-0.02em;}
+    .about-hero-sub{font-size:13px;opacity:0.85;line-height:1.7;}
+    .about-section{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.25rem;margin-bottom:10px;}
+    .about-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--amber);margin-bottom:8px;}
+    .about-text{font-size:13px;color:var(--ink2);line-height:1.75;}
+    .about-steps{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+    .about-step{display:flex;gap:10px;align-items:flex-start;}
+    .step-num{width:22px;height:22px;border-radius:50%;background:var(--amber);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+    .step-text{font-size:13px;color:var(--ink2);line-height:1.6;}
+    .tier-explain{display:flex;flex-direction:column;gap:6px;margin-top:6px;}
+    .tier-row{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--ink2);}
+    .tier-label{flex-shrink:0;}
+
+    /* ── CITATION ── */
+    .cite-btn{font-size:11px;color:var(--blue);background:var(--blue-bg);border:0.5px solid var(--blue);border-radius:var(--r-md);padding:3px 10px;cursor:pointer;font-family:var(--font-sans);transition:all 0.15s;}
+    .cite-btn:hover{background:var(--blue);color:#fff;}
+    .cite-popup{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-md);padding:10px 12px;margin-top:8px;display:none;}
+    .cite-popup.show{display:block;}
+    .cite-format-tabs{display:flex;gap:4px;margin-bottom:8px;}
+    .cf-tab{font-size:11px;padding:3px 10px;border-radius:20px;border:0.5px solid var(--border2);cursor:pointer;font-family:var(--font-sans);color:var(--ink2);background:var(--bg);}
+    .cf-tab.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+    .cite-text{font-size:12px;color:var(--ink2);font-style:italic;line-height:1.7;background:var(--bg2);padding:8px 10px;border-radius:var(--r-md);margin-bottom:8px;word-break:break-all;}
+    .copy-cite-btn{font-size:12px;padding:5px 14px;background:var(--amber);color:#fff;border:none;border-radius:var(--r-md);cursor:pointer;font-family:var(--font-sans);}
+
+  
+    /* ── DICTIONARY GATE ── */
+    .dict-gate{background:linear-gradient(135deg,#1C1410,#3D1A0A);border-radius:var(--r-lg);padding:1.5rem;margin-bottom:1rem;color:#fff;text-align:center;}
+    .dg-title{font-size:18px;font-weight:700;margin-bottom:6px;}
+    .dg-sub{font-size:13px;opacity:0.8;line-height:1.6;margin-bottom:1rem;}
+    .dg-input-row{display:flex;gap:8px;max-width:320px;margin:0 auto;}
+    .dg-input{flex:1;font-size:13px;padding:8px 12px;border-radius:var(--r-md);border:none;background:rgba(255,255,255,0.15);color:#fff;font-family:var(--font-sans);outline:none;}
+    .dg-input::placeholder{color:rgba(255,255,255,0.5);}
+    .dg-btn{padding:8px 16px;background:#fff;color:var(--amber);border:none;border-radius:var(--r-md);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--font-sans);white-space:nowrap;}
+    .dict-teaser-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:0.875rem 1.125rem;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px;}
+    .dt-word{font-size:16px;font-weight:700;color:var(--amber);font-style:italic;}
+    .dt-meaning{font-size:13px;color:var(--ink2);flex:1;margin:0 12px;}
+    .dt-lock{font-size:12px;color:var(--ink3);}
+    /* Submit access code gate */
+    .submit-gate{background:var(--bg2);border:0.5px solid var(--border2);border-radius:var(--r-lg);padding:1.25rem;margin-bottom:1rem;}
+    .sg-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+    .sg-sub{font-size:12px;color:var(--ink3);margin-bottom:10px;line-height:1.5;}
+    .sg-row{display:flex;gap:8px;}
+    .sg-input{flex:1;font-size:13px;padding:8px 12px;border-radius:var(--r-md);border:0.5px solid var(--border2);background:var(--bg);color:var(--ink);font-family:var(--font-sans);outline:none;}
+    .sg-input:focus{border-color:var(--amber);}
+    .sg-btn{padding:8px 16px;background:var(--amber);color:#fff;border:none;border-radius:var(--r-md);font-size:13px;font-weight:500;cursor:pointer;font-family:var(--font-sans);}
+    .sg-err{font-size:12px;color:var(--red);margin-top:6px;display:none;}
+    .word-form-locked{display:none;}
+
+  
+    /* ── AUTH MODAL ── */
+    .auth-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem;}
+    .auth-modal{background:var(--bg);border-radius:var(--r-xl);padding:1.75rem;width:100%;max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.2);}
+    .auth-logo{font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-0.03em;margin-bottom:4px;}
+    .auth-logo span{color:var(--amber);}
+    .auth-title{font-size:18px;font-weight:600;color:var(--ink);margin-bottom:4px;}
+    .auth-sub{font-size:13px;color:var(--ink3);margin-bottom:1.25rem;line-height:1.5;}
+    .auth-tabs{display:flex;gap:0;margin-bottom:1.25rem;border:0.5px solid var(--border2);border-radius:var(--r-md);overflow:hidden;}
+    .auth-tab{flex:1;padding:8px;font-size:13px;border:none;background:var(--bg);cursor:pointer;font-family:var(--font-sans);color:var(--ink2);transition:all 0.15s;}
+    .auth-tab.active{background:var(--amber);color:#fff;font-weight:500;}
+    .auth-form{display:flex;flex-direction:column;gap:10px;}
+    .auth-input{width:100%;font-size:14px;padding:10px 14px;border-radius:var(--r-md);border:0.5px solid var(--border2);background:var(--bg);color:var(--ink);font-family:var(--font-sans);outline:none;}
+    .auth-input:focus{border-color:var(--amber);}
+    .auth-btn{width:100%;padding:11px;background:var(--amber);color:#fff;border:none;border-radius:var(--r-md);font-size:14px;font-weight:600;cursor:pointer;font-family:var(--font-sans);transition:opacity 0.15s;}
+    .auth-btn:hover{opacity:0.88;}
+    .auth-btn:disabled{opacity:0.55;cursor:not-allowed;}
+    .auth-divider{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink3);margin:4px 0;}
+    .auth-divider::before,.auth-divider::after{content:'';flex:1;height:0.5px;background:var(--border2);}
+    .auth-google-btn{width:100%;padding:10px;background:var(--bg);color:var(--ink);border:0.5px solid var(--border2);border-radius:var(--r-md);font-size:14px;font-weight:500;cursor:pointer;font-family:var(--font-sans);display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s;}
+    .auth-google-btn:hover{border-color:var(--amber);background:var(--bg2);}
+    .auth-err{font-size:12px;color:var(--red);background:var(--red-bg);padding:6px 10px;border-radius:var(--r-md);display:none;}
+    .auth-ok{font-size:12px;color:var(--green-dark);background:var(--green-bg);padding:6px 10px;border-radius:var(--r-md);display:none;}
+    .auth-close{position:absolute;top:12px;right:16px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--ink3);line-height:1;}
+    .auth-modal{position:relative;}
+    .auth-forgot{font-size:12px;color:var(--amber);cursor:pointer;background:none;border:none;font-family:var(--font-sans);text-align:right;align-self:flex-end;}
+
+    /* ── USER MENU ── */
+    .user-menu-wrap{position:relative;}
+    .user-avatar-btn{width:30px;height:30px;border-radius:50%;background:var(--amber);border:none;cursor:pointer;font-size:12px;font-weight:700;color:#fff;font-family:var(--font-sans);display:flex;align-items:center;justify-content:center;overflow:hidden;}
+    .user-avatar-btn img{width:100%;height:100%;object-fit:cover;}
+    .user-dropdown{position:absolute;top:calc(100% + 6px);right:0;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:8px;min-width:200px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:500;display:none;}
+    .user-dropdown.show{display:block;}
+    .ud-name{font-size:13px;font-weight:600;color:var(--ink);padding:4px 8px 2px;}
+    .ud-email{font-size:11px;color:var(--ink3);padding:0 8px 8px;border-bottom:0.5px solid var(--border);}
+    .ud-item{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:var(--r-md);font-size:13px;color:var(--ink2);cursor:pointer;transition:background 0.15s;}
+    .ud-item:hover{background:var(--bg2);}
+    .ud-item.danger{color:var(--red);}
+    .ud-badge{font-size:10px;padding:1px 6px;border-radius:20px;font-weight:500;}
+
+    /* ── PROFILE PAGE ── */
+    .profile-hero{background:linear-gradient(135deg,var(--bg2),var(--amber-pale));border-radius:var(--r-lg);padding:1.5rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem;}
+    .profile-avatar{width:56px;height:56px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#fff;flex-shrink:0;overflow:hidden;}
+    .profile-avatar img{width:100%;height:100%;object-fit:cover;}
+    .profile-name{font-size:18px;font-weight:700;color:var(--ink);}
+    .profile-type{font-size:12px;color:var(--ink3);margin-top:2px;}
+    .profile-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem;}
+    .ps-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-md);padding:10px 12px;text-align:center;}
+    .ps-num{font-size:20px;font-weight:700;color:var(--amber);}
+    .ps-lbl{font-size:10px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.05em;margin-top:2px;}
+    .profile-submissions{margin-top:8px;}
+
+  
+    /* ── LEARN AUDIO ── */
+    .alpha-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;}
+    .alpha-cell{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--r-md);padding:8px 6px;text-align:center;transition:all 0.15s;}
+    .alpha-cell:hover{border-color:var(--amber);background:var(--amber-pale);}
+    .alpha-letter{font-size:18px;font-weight:700;color:var(--amber);line-height:1;}
+    .alpha-name{font-size:10px;color:var(--ink3);margin-top:3px;}
+    .alpha-audio-btn{background:none;border:none;cursor:pointer;font-size:14px;margin-top:4px;opacity:0.5;transition:opacity 0.15s;display:block;width:100%;text-align:center;}
+    .alpha-audio-btn:hover{opacity:1;}
+    .alpha-audio-btn.has-audio{opacity:1;color:var(--amber);}
+    .alpha-audio-btn.playing{animation:pulse 0.6s infinite alternate;}
+    @keyframes pulse{from{opacity:0.6}to{opacity:1}}
+
+    .num-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+    .num-cell{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--r-md);padding:8px 10px;display:flex;align-items:center;justify-content:space-between;gap:6px;}
+    .num-left{display:flex;flex-direction:column;}
+    .num-digit{font-size:16px;font-weight:700;color:var(--amber);}
+    .num-word{font-size:12px;color:var(--ink2);margin-top:1px;}
+    .num-audio-btn{background:none;border:none;cursor:pointer;font-size:14px;opacity:0.4;transition:opacity 0.15s;flex-shrink:0;}
+    .num-audio-btn:hover,.num-audio-btn.has-audio{opacity:1;color:var(--amber);}
+
+    .tone-grid{display:grid;grid-template-columns:1fr;gap:8px;margin-top:8px;}
+    .tone-row{background:var(--bg3);border:0.5px solid var(--border);border-radius:var(--r-md);padding:10px 12px;display:flex;align-items:center;justify-content:space-between;}
+    .tone-info{flex:1;}
+    .tone-mark{font-size:20px;font-weight:700;color:var(--amber);}
+    .tone-label{font-size:12px;color:var(--ink2);margin-left:8px;}
+    .tone-example{font-size:11px;color:var(--ink3);margin-top:3px;}
+    .tone-audio-btn{background:none;border:none;cursor:pointer;font-size:16px;opacity:0.4;transition:opacity 0.15s;}
+    .tone-audio-btn:hover,.tone-audio-btn.has-audio{opacity:1;color:var(--amber);}
+
+    .learn-audio-note{font-size:11px;color:var(--ink3);background:var(--bg2);border-radius:var(--r-md);padding:8px 12px;margin-top:8px;line-height:1.6;}
+    .upload-audio-link{color:var(--amber);cursor:pointer;text-decoration:underline;}
+
+  
+    /* ── MOBILE RESPONSIVENESS ── */
+    @media (max-width: 600px) {
+      body { padding: 0.5rem; }
+      .frame { padding: 0.875rem; border-radius: var(--r-lg); }
+      .nav { gap: 6px; }
+      .logo { font-size: 17px; }
+      .nb { font-size: 11px; padding: 3px 8px; }
+      .nav-links { gap: 2px; flex-wrap: wrap; }
+      .hero-title { font-size: 17px; }
+      .hero-sub { font-size: 12px; }
+      .stats-row { grid-template-columns: repeat(3,1fr); gap: 6px; }
+      .stat-num { font-size: 16px; }
+      .stat-lbl { font-size: 9px; }
+      .form-2col { grid-template-columns: 1fr; }
+      .tier-toggle { flex-wrap: wrap; }
+      .tier-btn { font-size: 11px; padding: 6px 6px; }
+      .fest-hero-band { padding: 1rem; }
+      .fhb-title { font-size: 17px; }
+      .fd-grid { grid-template-columns: 1fr 1fr; }
+      .map-state-grid { grid-template-columns: repeat(2,1fr); }
+      .profile-hero { flex-direction: column; text-align: center; }
+      .alpha-grid { grid-template-columns: repeat(3,1fr); }
+      .num-grid { grid-template-columns: 1fr; }
+      .stt { flex-wrap: wrap; }
+      .stt-btn { flex: none; width: 48%; }
+      .auth-modal { padding: 1.25rem; }
+      .ec-name { font-size: 13px; }
+      .ibar { gap: 4px; }
+      .ib { font-size: 11px; padding: 3px 8px; }
+    }
+    @media (max-width: 400px) {
+      .nb { display: none; }
+      .nb.active, .nb.submit-nb { display: block; }
+      .nav-links { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 4px; }
+      .nb { display: block; }
+    }
+
+    /* ── GLOBAL SEARCH ── */
+    .gsearch-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 900; display: flex; align-items: flex-start; justify-content: center; padding: 80px 1rem 1rem; }
+    .gsearch-modal { background: var(--bg); border-radius: var(--r-xl); width: 100%; max-width: 560px; box-shadow: 0 20px 60px rgba(0,0,0,0.2); overflow: hidden; }
+    .gsearch-header { padding: 1rem 1.25rem 0; display: flex; gap: 10px; align-items: center; border-bottom: 0.5px solid var(--border); padding-bottom: 1rem; }
+    .gsearch-input { flex: 1; font-size: 15px; padding: 10px 14px; border-radius: var(--r-md); border: 0.5px solid var(--border2); background: var(--bg); color: var(--ink); font-family: var(--font-sans); outline: none; }
+    .gsearch-input:focus { border-color: var(--amber); }
+    .gsearch-close { background: none; border: none; font-size: 20px; cursor: pointer; color: var(--ink3); padding: 4px 8px; font-family: var(--font-sans); }
+    .gsearch-body { max-height: 60vh; overflow-y: auto; padding: 0.75rem 1.25rem 1.25rem; }
+    .gsearch-section { margin-bottom: 1rem; }
+    .gsearch-section-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink3); margin-bottom: 6px; padding: 4px 0; border-bottom: 0.5px solid var(--border); }
+    .gsearch-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-radius: var(--r-md); cursor: pointer; transition: background 0.15s; }
+    .gsearch-item:hover { background: var(--bg2); }
+    .gi-type { font-size: 10px; padding: 2px 7px; border-radius: 20px; font-weight: 500; flex-shrink: 0; }
+    .gi-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+    .gi-meta { font-size: 11px; color: var(--ink3); }
+    .gsearch-empty { font-size: 13px; color: var(--ink3); text-align: center; padding: 2rem 0; }
+    .gsearch-loading { font-size: 13px; color: var(--ink3); text-align: center; padding: 1.5rem 0; }
+    .search-icon-btn { background: none; border: 0.5px solid var(--border2); border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--ink2); cursor: pointer; font-family: var(--font-sans); display: flex; align-items: center; gap: 5px; transition: all 0.15s; }
+    .search-icon-btn:hover { border-color: var(--amber); color: var(--amber); }
+
+    /* ── SOCIAL SHARING ── */
+    .share-bar { display: flex; gap: 6px; flex-wrap: wrap; padding: 10px 0; border-top: 0.5px solid var(--border); margin-top: 8px; }
+    .share-btn { display: flex; align-items: center; gap: 5px; font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--border2); cursor: pointer; font-family: var(--font-sans); background: var(--bg); color: var(--ink2); transition: all 0.15s; text-decoration: none; }
+    .share-btn:hover { transform: translateY(-1px); box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    .share-wa { border-color: #25D366; color: #25D366; }
+    .share-wa:hover { background: #25D366; color: #fff; }
+    .share-tw { border-color: #1DA1F2; color: #1DA1F2; }
+    .share-tw:hover { background: #1DA1F2; color: #fff; }
+    .share-copy { border-color: var(--amber); color: var(--amber); }
+    .share-copy:hover { background: var(--amber); color: #fff; }
+
+  </style>
+</head>
+<body>
+<div class="frame">
+
+  <!-- NAV -->
+  <div class="nav">
+    <div class="logo">Ori<span>ki</span></div>
+    <div class="nav-links">
+      <button class="nb active" data-tab="oriki" data-tip="Browse Yoruba praise poetry">Oriki</button>
+      <button class="nb" data-tab="owe">Ọwẹ</button>
+      <button class="nb" data-tab="ijala">Ìjálá</button>
+      <button class="nb" data-tab="festivals">Odun</button>
+      <button class="nb" data-tab="dictionary">Dictionary</button>
+      <button class="nb" data-tab="learn" data-tip="Yoruba alphabet, tone marks and numbers">Learn</button>
+      <button class="nb" data-tab="map" data-tip="Documentation coverage map — which regions need contributions">Map</button>
+      <button class="nb" data-tab="about" data-tip="About this archive — mission, how it works, how to contribute">About</button>
+      <button class="nb" id="nav-profile-btn" data-tab="profile" data-tip="Your profile and submissions" style="display:none;">👤 Profile</button>
+      <button class="nb submit-nb" data-tab="submit" data-tip="Contribute an Oriki, Owe, Ijala or Yoruba word">+ Submit</button>
+    </div>
+    <!-- Global search button -->
+    <button class="search-icon-btn" onclick="openGlobalSearch()" data-tip="Search across all content — Oriki, Owe, Ijala, festivals and dictionary">
+      🔍 Search <span style="font-size:10px;opacity:0.6;margin-left:2px;">⌘K</span>
+    </button>
+    <!-- Auth button / user menu -->
+    <div id="nav-auth-area">
+      <button class="nb" id="nav-signin-btn" onclick="openAuth()" data-tip="Sign in or create an account" style="border:0.5px solid var(--border2);">Sign in</button>
+    </div>
+    <div id="nav-user-menu" class="user-menu-wrap" style="display:none;">
+      <button class="user-avatar-btn" id="user-avatar-btn" onclick="toggleUserMenu()" data-tip="Your account">?</button>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="ud-name" id="ud-name">Loading…</div>
+        <div class="ud-email" id="ud-email"></div>
+        <div class="ud-item" onclick="showTab('profile');loadProfilePage();toggleUserMenu()">👤 My profile</div>
+        <div class="ud-item" onclick="showTab('submit');toggleUserMenu()">✏️ Submit content</div>
+        <div class="ud-item danger" onclick="signOut()">↩ Sign out</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ ORIKI TAB ═══ -->
+  <div id="tab-oriki" class="tab active">
+    <div class="hero">
+      <div class="hero-title">The living archive of Yorùbá praise poetry</div>
+      <div class="hero-sub">Search by family name, town, kingdom, or lineage. Two tiers: Verified Corpus and Community Archive.</div>
+      <div class="search-row">
+        <input id="oriki-search" type="text" placeholder="e.g. Adesanya, Ibadan, Oyo Kingdom…"/>
+        <button id="oriki-search-btn" data-tip="Search by name, town, kingdom or Yoruba text">Search</button>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stat-oriki">—</div><div class="stat-lbl">Oriki entries</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-verified">—</div><div class="stat-lbl">Verified corpus</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-towns">—</div><div class="stat-lbl">Towns covered</div></div>
+    </div>
+    <div class="tier-toggle">
+      <button class="tier-btn active" data-tier="all" data-tip="Show all entries — community and verified">All entries</button>
+      <button class="tier-btn v-tier" data-tier="verified" data-tip="Show only Verified Corpus entries — reviewed and citable by academics">⭐ Verified</button>
+      <button class="tier-btn" data-tier="community" data-tip="Show community-submitted entries awaiting verification">Community</button>
+    </div>
+    <div class="section-title">Filter by category</div>
+    <div class="filter-row" id="oriki-filters">
+      <button class="pill active" data-cat="">All</button>
+      <button class="pill" data-cat="family">Family</button>
+      <button class="pill" data-cat="town">Town</button>
+      <button class="pill" data-cat="kingdom">Kingdom</button>
+      <button class="pill" data-cat="orisa">Òrìṣà</button>
+      <button class="pill" data-cat="occupation">Occupation</button>
+      <button class="pill" data-cat="warrior">Warrior</button>
+      <button class="pill" data-cat="hunter">Hunter</button>
+      <button class="pill" data-cat="lineage">Lineage</button>
+      <button class="pill" data-cat="personal">Personal</button>
+    </div>
+    <div id="oriki-list"><div class="state-msg">Loading entries…</div></div>
+  </div>
+
+  <!-- ═══ OWE TAB ═══ -->
+  <div id="tab-owe" class="tab">
+    <div class="hero">
+      <div class="hero-title">Ọwẹ: Yorùbá Proverbs and Wisdom</div>
+      <div class="hero-sub">Each entry shows the original Yorùbá proverb, its literal translation, and the deeper teaching it carries.</div>
+      <div class="search-row">
+        <input id="owe-search" type="text" placeholder="Search proverb text or meaning…"/>
+        <button id="owe-search-btn" data-tip="Search proverb text or meaning">Search</button>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stat-owe">—</div><div class="stat-lbl">Proverbs</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-owe-verified">—</div><div class="stat-lbl">Verified</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-owe-regions">—</div><div class="stat-lbl">Regions</div></div>
+    </div>
+    <div class="section-title">Owe entries</div>
+    <div id="owe-list"><div class="state-msg">Loading Owe…</div></div>
+  </div>
+
+  <!-- ═══ DETAIL TAB ═══ -->
+  <div id="tab-detail" class="tab">
+    <button class="back-btn" id="detail-back" data-tip="Return to browse">← Back</button>
+    <div id="detail-content"></div>
+  </div>
+
+  <!-- ═══ IJALA TAB ═══ -->
+  <div id="tab-ijala" class="tab">
+    <div class="hero">
+      <div class="hero-title">Ìjálá: Hunters' Praise Poetry</div>
+      <div class="hero-sub">Ìjálá is the oral poetry of Yorùbá hunters — chanted during hunts, festivals, and the worship of Ogun, deity of iron and the hunt.</div>
+      <div class="search-row">
+        <input id="ijala-search" type="text" placeholder="Search title, animal, region…"/>
+        <button id="ijala-search-btn" data-tip="Search title, animal or region">Search</button>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stat-ijala">—</div><div class="stat-lbl">Ijala entries</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-ijala-verified">—</div><div class="stat-lbl">Verified</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-ijala-regions">—</div><div class="stat-lbl">Regions</div></div>
+    </div>
+    <div class="section-title">Ijala entries</div>
+    <div id="ijala-list"><div class="state-msg">Loading Ijala…</div></div>
+  </div>
+
+  <!-- ═══ FESTIVALS TAB ═══ -->
+  <div id="tab-festivals" class="tab">
+    <div class="fest-hero-band">
+      <div class="fhb-title">Odun: Yoruba Festivals & Sacred Ceremonies</div>
+      <div class="fhb-sub">Sacred dates, living ceremonies, and cultural events. Citable records with attendance planning for diaspora and local visitors.</div>
+      <div class="fhb-search">
+        <input id="fest-search" type="text" placeholder="Search festival, town, deity, month…"/>
+        <button id="fest-search-btn" data-tip="Search festival name, town, deity or month">Search</button>
+      </div>
+    </div>
+    <div class="section-title">Coming up</div>
+    <div class="upcoming-row" id="upcoming-row"></div>
+    <div class="filter-row" id="fest-filters">
+      <button class="pill active" data-fcat="">All</button>
+      <button class="pill" data-fcat="Royal">Royal</button>
+      <button class="pill" data-fcat="Orisa">Òrìṣà</button>
+      <button class="pill" data-fcat="Ancestral">Ancestral</button>
+      <button class="pill" data-fcat="Harvest">Harvest</button>
+      <button class="pill" data-fcat="Heritage">UNESCO Heritage</button>
+    </div>
+    <div id="fest-list"></div>
+  </div>
+
+  <!-- ═══ FESTIVAL DETAIL TAB ═══ -->
+  <div id="tab-fest-detail" class="tab">
+    <button class="back-btn" id="fest-back" data-tip="Return to festivals list">← Back to festivals</button>
+    <div id="fest-detail-content"></div>
+  </div>
+
+  <!-- ═══ DICTIONARY TAB ═══ -->
+  <div id="tab-dictionary" class="tab">
+    <div class="hero">
+      <div class="hero-title">Yorùbá Dictionary</div>
+      <div class="hero-sub">A living dictionary of Yorùbá words — with meanings, tone marks, part of speech, example usage, and dialect notes. Community-contributed and expert-verified.</div>
+      <div class="search-row">
+        <input id="dict-search" type="text" placeholder="Search Yorùbá word or English meaning…"/>
+        <button id="dict-search-btn">Search</button>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stat-dict">—</div><div class="stat-lbl">Words</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-dict-verified">—</div><div class="stat-lbl">Verified</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-dict-pos">—</div><div class="stat-lbl">Parts of speech</div></div>
+    </div>
+    <div class="filter-row" id="dict-filters">
+      <button class="pill active" data-pos="">All</button>
+      <button class="pill" data-pos="Noun">Noun</button>
+      <button class="pill" data-pos="Verb">Verb</button>
+      <button class="pill" data-pos="Adjective">Adjective</button>
+      <button class="pill" data-pos="Adverb">Adverb</button>
+      <button class="pill" data-pos="Interjection">Interjection</button>
+    </div>
+    <div id="dict-list"><div class="state-msg">Loading dictionary…</div></div>
+  </div>
+
+  <!-- ═══ DICTIONARY TAB ═══ -->
+  <div id="tab-dictionary" class="tab">
+    <div class="hero">
+      <div class="hero-title">Yoruba Dictionary</div>
+      <div class="hero-sub">A curated, verified Yoruba dictionary with tone marks, pronunciations, and example usage. Full access requires a premium subscription.</div>
+      <div class="search-row">
+        <input id="dict-search" type="text" placeholder="Search a Yoruba word or meaning…"/>
+        <button id="dict-search-btn" data-tip="Search the dictionary">Search</button>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stat-dict">—</div><div class="stat-lbl">Words</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-dict-verified">—</div><div class="stat-lbl">Verified</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-dict-pos">—</div><div class="stat-lbl">Word types</div></div>
+    </div>
+
+    <!-- Premium gate banner -->
+    <div id="dict-gate-banner" class="dict-gate">
+      <div class="dg-title">Full dictionary access — premium</div>
+      <div class="dg-sub">Free users see word and meaning. Tone marks, pronunciation audio, example usage, dialect notes, and contributor details require a premium subscription or approved research access.</div>
+      <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;">
+        <button class="dg-btn" onclick="showTab('about')" data-tip="Learn about premium access">Learn more →</button>
+        <button class="dg-btn" style="background:var(--amber);color:#fff;" onclick="enterDictAccessCode()" data-tip="Enter your access code if you have one">Enter access code</button>
+      </div>
+      <div id="dict-code-row" style="display:none;margin-top:12px;">
+        <div class="dg-input-row">
+          <input class="dg-input" id="dict-access-code" type="text" placeholder="Enter access code…" onkeydown="if(event.key==='Enter')verifyDictCode()"/>
+          <button class="dg-btn" onclick="verifyDictCode()">Unlock</button>
+        </div>
+        <div id="dict-code-err" style="font-size:12px;color:#FAC775;margin-top:6px;display:none;">Invalid code. Contact us to request access.</div>
+      </div>
+    </div>
+
+    <div class="section-title">Dictionary entries</div>
+    <div id="dict-list"><div class="state-msg">Loading dictionary…</div></div>
+  </div>
+
+  <!-- ═══ ABOUT TAB ═══ -->
+  <div id="tab-about" class="tab">
+    <div class="about-hero">
+      <div class="about-hero-title">Oriki Archive</div>
+      <div class="about-hero-sub">A community-driven, academically citable digital archive of Yoruba oral heritage. Built to preserve what is irreplaceable before it is lost.</div>
+    </div>
+
+    <div class="about-section">
+      <div class="about-section-title">Why this exists</div>
+      <div class="about-text">Oriki — Yoruba praise poetry — is one of the most sophisticated forms of human cultural expression. A single family Oriki encodes genealogy, migration history, moral values, and spiritual identity. For over a thousand years it was transmitted orally from elder to child.<br/><br/>Today that transmission chain is breaking. Urbanisation, the diaspora, and generational disconnection have left millions of Yoruba people — especially outside Nigeria — unable to recite their own lineage poetry. When an elder who holds their family Oriki dies without passing it on, that knowledge is simply gone forever.<br/><br/>Oriki Archive exists to stop that loss. This platform was built by a diaspora Yoruba person who searched online for their own family Oriki and found nothing.</div>
+    </div>
+
+    <div class="about-section">
+      <div class="about-section-title">What you can do here</div>
+      <div class="about-steps">
+        <div class="about-step"><div class="step-num">1</div><div class="step-text"><strong>Search</strong> — enter your family name, town, or kingdom to find documented Oriki connected to your lineage.</div></div>
+        <div class="about-step"><div class="step-num">2</div><div class="step-text"><strong>Submit</strong> — contribute an Oriki you know. Text, audio, or both. Every submission is permanently attributed to you.</div></div>
+        <div class="about-step"><div class="step-num">3</div><div class="step-text"><strong>Endorse or dispute</strong> — help the community verify accuracy. Entries with strong endorsements are nominated for the Verified Corpus.</div></div>
+        <div class="about-step"><div class="step-num">4</div><div class="step-text"><strong>Comment</strong> — add context, corrections, or historical notes. All comments are permanent records.</div></div>
+        <div class="about-step"><div class="step-num">5</div><div class="step-text"><strong>Link</strong> — connect related Oriki entries — variants, shared ancestors, diaspora connections.</div></div>
+      </div>
+    </div>
+
+    <div class="about-section">
+      <div class="about-section-title">Two-tier trust system</div>
+      <div class="about-text">The archive operates two tiers so it can serve both community contributors and academic researchers.</div>
+      <div class="tier-explain">
+        <div class="tier-row"><div class="tier-label"><span class="tbadge tb-community">Community</span></div><div>All new submissions. Visible, searchable, and valuable. Can be endorsed, disputed, and nominated.</div></div>
+        <div class="tier-row" style="margin-top:4px;"><div class="tier-label"><span class="tbadge tb-verified">⭐ Verified</span></div><div>Entries reviewed against academic or primary sources by the advisory council. Permanently citable in academic work.</div></div>
+      </div>
+    </div>
+
+    <div class="about-section">
+      <div class="about-section-title">Content in the archive</div>
+      <div class="about-text">
+        <strong>Oriki</strong> — Yoruba praise poetry for families, towns, kingdoms, deities, occupations, warriors, hunters, and lineages.<br/><br/>
+        <strong>Owe</strong> — Yoruba proverbs and wisdom sayings with literal translation and deeper cultural meaning.<br/><br/>
+        <strong>Ijala</strong> — Hunters' praise poetry chanted to Ogun, the deity of iron and the hunt.<br/><br/>
+        <strong>Dictionary</strong> — A community-built Yoruba word list with tone marks, parts of speech, and example usage.<br/><br/>
+        <strong>Festivals</strong> — Documentation of Yoruba festivals with history, programme, and attendance planning for diaspora visitors.
+      </div>
+    </div>
+
+    <div class="about-section">
+      <div class="about-section-title">Methodology and verification</div>
+      <div class="about-text">Entries are never deleted. Disputes, corrections, and variants are all preserved as permanent record alongside the original submission. The community endorsement process — combined with review by academic advisors and cultural custodians — determines which entries reach Verified Corpus status.<br/><br/>For academic citation queries, community partnerships, or commissioning documentation of your family or royal lineage, contact: <strong>orikiarchive@gmail.com</strong></div>
+    </div>
+
+    <div class="about-section" style="background:var(--amber-pale);border-color:var(--amber-light);">
+      <div class="about-section-title">Contribute to the archive</div>
+      <div class="about-text">Do you know an Oriki — for your family, your town, a deity you honour? Submit it. A phone recording of an elder chanting is more valuable than a typed text. Every contribution, however small, helps preserve what is irreplaceable.</div>
+      <button class="submit-btn" style="margin-top:12px;width:auto;padding:8px 24px;" onclick="showTab('submit')" data-tip="Go to the submission form">Submit an Oriki →</button>
+    </div>
+  </div>
+
+  <!-- ═══ LEARN TAB ═══ -->
+  <div id="tab-learn" class="tab">
+    <div class="hero">
+      <div class="hero-title">Yorùbá Basics</div>
+      <div class="hero-sub">A starter reference for language learners. Click the speaker icon 🔊 to hear pronunciation. Audio is added by approved contributors.</div>
+    </div>
+
+    <div class="learn-card">
+      <h3>Yorùbá alphabet <span style="font-size:11px;color:var(--ink3);font-weight:400;">— 25 letters</span></h3>
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:6px;">Tone marks on vowels change meaning entirely. Special letters: Ẹ/ẹ, Ọ/ọ, Ṣ/ṣ, GB/gb.</div>
+      <div class="alpha-grid" id="alpha-grid"></div>
+      <div class="learn-audio-note">🔊 Audio pronunciations are recorded by approved contributors. <span class="upload-audio-link" onclick="showTab('submit')">Contribute a recording →</span></div>
+    </div>
+
+    <div class="learn-card">
+      <h3>Tone marks</h3>
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:6px;">Yorùbá has three tones. The same word with different tones can mean completely different things.</div>
+      <div class="tone-grid" id="tone-grid"></div>
+    </div>
+
+    <div class="learn-card">
+      <h3>Special letters</h3>
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:6px;">These letters do not exist in the English alphabet. Pronunciation requires practice.</div>
+      <div class="tone-grid" id="special-grid"></div>
+    </div>
+
+    <div class="learn-card">
+      <h3>Numbers</h3>
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:6px;">Yorùbá uses a subtractive number system — some numbers are expressed as subtractions from a higher number.</div>
+      <div class="num-grid" id="num-grid"></div>
+    </div>
+
+    <div class="learn-card">
+      <h3>Basic greetings</h3>
+      <div style="font-size:12px;color:var(--ink3);margin-bottom:6px;">Essential phrases for daily interaction.</div>
+      <div class="tone-grid" id="greetings-grid"></div>
+    </div>
+  </div>
+
+  <!-- ═══ MAP TAB ═══ -->
+  <div id="tab-map" class="tab">
+    <div class="hero">
+      <div class="hero-title">Documentation coverage</div>
+      <div class="hero-sub">Live data from the archive — which states are documented and which need contributions.</div>
+    </div>
+    <div class="map-summary">
+      <div class="stat-card"><div class="stat-num" id="map-total">—</div><div class="stat-lbl">Total entries</div></div>
+      <div class="stat-card"><div class="stat-num" id="map-states">—</div><div class="stat-lbl">States covered</div></div>
+      <div class="stat-card"><div class="stat-num" id="map-towns">—</div><div class="stat-lbl">Towns covered</div></div>
+    </div>
+    <div class="map-alert" id="map-alert" style="display:none;"></div>
+    <div class="section-title">Coverage by state</div>
+    <div class="map-state-grid" id="map-state-grid"><div class="state-msg">Loading coverage data…</div></div>
+    <div style="margin-top:1rem;font-size:13px;color:var(--ink2);line-height:1.6;">
+      <button class="subtle-link" data-tab="submit">→ Submit an Oriki to help close the gap</button>
+    </div>
+  </div>
+
+  <!-- ═══ SUBMIT TAB ═══ -->
+  <div id="tab-submit" class="tab">
+    <div style="font-size:18px;font-weight:700;color:var(--ink);margin-bottom:4px;">Contribute to the archive</div>
+    <div style="font-size:13px;color:var(--ink2);margin-bottom:1.25rem;line-height:1.6;">All submissions enter the Community Archive. Verified Corpus status is earned through endorsements and council review.</div>
+    <div class="stt">
+      <button class="stt-btn active" id="stt-oriki">Oríkì</button>
+      <button class="stt-btn" id="stt-owe">Ọwẹ / Proverb</button>
+      <button class="stt-btn" id="stt-ijala">Ìjálá</button>
+      <button class="stt-btn" id="stt-word" data-tip="Submit a Yoruba word to the community dictionary">Yoruba Word</button>
+    </div>
+    <div id="submit-feedback"></div>
+
+    <!-- ORIKI FORM -->
+    <form id="form-oriki" novalidate>
+      <div class="fg"><label class="fl">Title / name *</label><input class="fi" id="o-name" type="text" placeholder="e.g. Oriki Adeyemi family"/></div>
+      <div class="form-2col">
+        <div class="fg"><label class="fl">Category *</label>
+          <select class="fs" id="o-category">
+            <option value="">— select —</option>
+            <option value="family">Family</option><option value="town">Town</option>
+            <option value="kingdom">Kingdom</option><option value="orisa">Òrìṣà</option>
+            <option value="occupation">Occupation</option><option value="warrior">Warrior</option>
+            <option value="hunter">Hunter</option><option value="lineage">Lineage</option>
+            <option value="personal">Personal</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">State</label>
+          <select class="fs" id="o-state">
+            <option value="">— select —</option>
+            <option>Oyo</option><option>Lagos</option><option>Ogun</option><option>Osun</option>
+            <option>Ekiti</option><option>Ondo</option><option>Kwara</option><option>Kogi</option>
+            <option>Edo</option><option>Diaspora</option><option>Multiple</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-2col">
+        <div class="fg"><label class="fl">Town *</label><input class="fi" id="o-town" type="text" placeholder="e.g. Ibadan, Ile-Ife…"/></div>
+        <div class="fg"><label class="fl">Kingdom</label><input class="fi" id="o-kingdom" type="text" placeholder="e.g. Oyo, Ijesha…"/></div>
+      </div>
+      <div class="form-2col">
+        <div class="fg"><label class="fl">Region / dialect</label>
+          <select class="fs" id="o-region">
+            <option value="Standard Yoruba">Standard Yoruba</option>
+            <option>Ekiti dialect</option><option>Ijebu dialect</option>
+            <option>Ondo dialect</option><option>Oyo dialect</option>
+            <option>Egba dialect</option><option>Diaspora variant</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Occasion</label>
+          <select class="fs" id="o-occasion">
+            <option value="">— select —</option>
+            <option>Naming ceremony</option><option>Coronation</option>
+            <option>Wedding</option><option>Funeral</option>
+            <option>Festival</option><option>Daily greeting</option><option>Multiple</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label class="fl">Oriki text (Yoruba) *</label><textarea class="ft-area tall" id="o-yoruba" placeholder="Paste or type the full Oriki…"></textarea></div>
+      <div class="fg"><label class="fl">English translation</label><textarea class="ft-area" id="o-translation" placeholder="Literal or line-by-line translation of the Yoruba text…"></textarea></div>
+      <div class="fg"><label class="fl">Meaning / cultural significance</label><textarea class="ft-area" id="o-meaning" placeholder="What this Oriki means — its deeper cultural, spiritual, or historical significance beyond the literal words…"></textarea></div>
+      <div class="fg"><label class="fl">Historical context</label><textarea class="ft-area" id="o-notes" placeholder="Origin, history, significance…"></textarea></div>
+      <div class="source-box">
+        <div class="source-box-title">Source — required for Verified Corpus eligibility</div>
+        <div class="source-note">Entries with academic or primary sources are eligible for verification. Elder oral transmission counts as a primary source.</div>
+        <div class="fg"><label class="fl">Source name</label><input class="fi" id="o-source-name" type="text" placeholder="e.g. Elder Adeyemi, University of Ibadan archive…"/></div>
+        <div class="fg" style="margin-bottom:0;"><label class="fl">Source URL</label><input class="fi" id="o-source-url" type="text" placeholder="https://…"/></div>
+      </div>
+      <div class="fg">
+        <label class="fl">Audio recording (optional but invaluable)</label>
+        <div class="audio-upload-zone" onclick="document.getElementById('o-audio-file').click()" data-tip="Upload an audio recording of the Oriki being chanted — phone recordings welcome">
+          <div class="upload-icon-circle">🎙</div>
+          <div class="upload-text">Upload audio recording</div>
+          <div class="upload-hint">MP3, WAV, M4A, OGG · Max 50MB · Recording by an elder is most valuable</div>
+          <div class="audio-selected" id="o-audio-selected">✓ File selected</div>
+        </div>
+        <input type="file" id="o-audio-file" accept="audio/*" onchange="handleAudioSelect('o-audio-file','o-audio-selected')"/>
+      </div>
+      <div class="fg"><label class="fl">Your name *</label><input class="fi" id="o-contributor" type="text" placeholder="How you want to be credited"/>
+        <div class="form-hint">All submissions are permanently attributed. Nothing is ever deleted.</div>
+      </div>
+      <button type="submit" class="submit-btn" id="o-submit-btn">Submit to community archive</button>
+    </form>
+
+    <!-- OWE FORM -->
+    <form id="form-owe" novalidate style="display:none;">
+      <div class="fg"><label class="fl">Proverb title *</label><input class="fi" id="ow-name" type="text" placeholder="e.g. Owe on patience and wisdom"/></div>
+      <div class="fg"><label class="fl">Proverb text (Yoruba) *</label><textarea class="ft-area tall" id="ow-proverb" placeholder="Ẹni tó bá fẹ́ mọ ọ̀nà…"></textarea></div>
+      <div class="fg"><label class="fl">Literal translation *</label><textarea class="ft-area" id="ow-literal" placeholder="Word-for-word translation…"></textarea></div>
+      <div class="fg"><label class="fl">Deeper meaning / teaching *</label><textarea class="ft-area" id="ow-meaning" placeholder="What this proverb teaches or when it is used…"></textarea></div>
+      <div class="fg"><label class="fl">Usage context</label><textarea class="ft-area" id="ow-context" placeholder="When is this proverb typically spoken?"></textarea></div>
+      <div class="form-2col">
+        <div class="fg"><label class="fl">Region</label>
+          <select class="fs" id="ow-region">
+            <option value="Yorubaland">General Yorubaland</option>
+            <option>Ekiti dialect</option><option>Ijebu dialect</option>
+            <option>Ondo dialect</option><option>Oyo dialect</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Town (optional)</label><input class="fi" id="ow-town" type="text" placeholder="Specific town if known"/></div>
+      </div>
+      <div class="source-box">
+        <div class="source-box-title">Source</div>
+        <div class="fg" style="margin-bottom:0;"><label class="fl">Source name</label><input class="fi" id="ow-source" type="text" placeholder="Source or elder who shared this"/></div>
+      </div>
+      <div class="fg">
+        <label class="fl">Audio recording (optional)</label>
+        <div class="audio-upload-zone" onclick="document.getElementById('ow-audio-file').click()" data-tip="Upload a recording of this proverb being spoken — phone recordings welcome">
+          <div class="upload-icon-circle">🎙</div>
+          <div class="upload-text">Upload audio of this proverb being spoken</div>
+          <div class="upload-hint">MP3, WAV, M4A · Max 50MB</div>
+          <div class="audio-selected" id="ow-audio-selected">✓ File selected</div>
+        </div>
+        <input type="file" id="ow-audio-file" accept="audio/*" onchange="handleAudioSelect('ow-audio-file','ow-audio-selected')"/>
+      </div>
+      <div class="fg"><label class="fl">Your name *</label><input class="fi" id="ow-contributor" type="text" placeholder="How you want to be credited"/></div>
+      <button type="submit" class="submit-btn" id="ow-submit-btn">Submit Owe to archive</button>
+    </form>
+
+    <!-- IJALA FORM -->
+    <form id="form-ijala" novalidate style="display:none;">
+      <div class="fg"><label class="fl">Title *</label><input class="fi" id="ij-title" type="text" placeholder="e.g. Ijala of the Ajogun hunters"/></div>
+      <div class="form-2col">
+        <div class="fg"><label class="fl">Associated animal</label><input class="fi" id="ij-animal" type="text" placeholder="e.g. Antelope, Buffalo…"/></div>
+        <div class="fg"><label class="fl">Region</label><input class="fi" id="ij-region" type="text" placeholder="e.g. Oyo, Ibadan"/></div>
+      </div>
+      <div class="fg"><label class="fl">Town</label><input class="fi" id="ij-town" type="text" placeholder="Town of origin"/></div>
+      <div class="fg"><label class="fl">Hunter context</label><textarea class="ft-area" id="ij-context" placeholder="Context of the hunt or occasion…"></textarea></div>
+      <div class="fg"><label class="fl">Yoruba text *</label><textarea class="ft-area tall" id="ij-yoruba" placeholder="Full Ijala text in Yoruba…"></textarea></div>
+      <div class="fg"><label class="fl">Translation</label><textarea class="ft-area" id="ij-translation" placeholder="English translation…"></textarea></div>
+      <div class="source-box">
+        <div class="source-box-title">Source</div>
+        <div class="fg" style="margin-bottom:0;"><label class="fl">Source name</label><input class="fi" id="ij-source" type="text" placeholder="Elder, archive, or publication"/></div>
+      </div>
+      <div class="fg">
+        <label class="fl">Audio recording (optional)</label>
+        <div class="audio-upload-zone" onclick="document.getElementById('ij-audio-file').click()" data-tip="Upload a chanted recording of this Ijala — the most valuable contribution">
+          <div class="upload-icon-circle">🎙</div>
+          <div class="upload-text">Upload audio of this Ijala being chanted</div>
+          <div class="upload-hint">MP3, WAV, M4A · Max 50MB · Elder recordings most valued</div>
+          <div class="audio-selected" id="ij-audio-selected">✓ File selected</div>
+        </div>
+        <input type="file" id="ij-audio-file" accept="audio/*" onchange="handleAudioSelect('ij-audio-file','ij-audio-selected')"/>
+      </div>
+      <div class="fg"><label class="fl">Your name *</label><input class="fi" id="ij-contributor" type="text" placeholder="How you want to be credited"/></div>
+      <button type="submit" class="submit-btn" id="ij-submit-btn">Submit Ijala to archive</button>
+    </form>
+
+    <!-- YORUBA WORD FORM -->
+    <div id="word-submit-gate" class="submit-gate">
+      <div class="sg-title">🔒 Dictionary contributions are by invitation only</div>
+      <div class="sg-sub">To maintain quality and accuracy, only approved lexicographers, linguists, and vetted native speakers may submit dictionary entries. Enter your contributor access code to unlock the form.</div>
+      <div class="sg-row">
+        <input class="sg-input" id="word-access-code" type="text" placeholder="Enter contributor access code…" onkeydown="if(event.key==='Enter')verifyWordCode()"/>
+        <button class="sg-btn" onclick="verifyWordCode()" data-tip="Verify your contributor access code">Unlock</button>
+      </div>
+      <div class="sg-err" id="word-code-err">Invalid code. Contact orikiarchive@gmail.com to apply for contributor access.</div>
+      <div style="font-size:11px;color:var(--ink3);margin-top:8px;">To apply for contributor access, email orikiarchive@gmail.com with your qualifications.</div>
+    </div>
+    <form id="form-word" novalidate class="word-form-locked">
+      <div style="background:var(--green-bg);border-radius:var(--r-md);padding:8px 12px;margin-bottom:1rem;font-size:12px;color:var(--green-dark);">✓ Contributor access verified. Your submissions will be attributed to your access code.</div>
+      <div class="fg"><label class="fl">Yoruba word *</label><input class="fi" id="wd-word" type="text" placeholder="e.g. Àṣà"/></div>
+      <div class="fg"><label class="fl">Meaning *</label><input class="fi" id="wd-meaning" type="text" placeholder="English meaning…"/></div>
+      <div class="form-2col">
+        <div class="fg"><label class="fl">Part of speech</label>
+          <select class="fs" id="wd-pos">
+            <option value="">— select —</option>
+            <option>Noun</option><option>Verb</option><option>Adjective</option>
+            <option>Adverb</option><option>Pronoun</option><option>Interjection</option>
+          </select>
+        </div>
+        <div class="fg"><label class="fl">Dialect / region</label><input class="fi" id="wd-region" type="text" placeholder="e.g. Ijebu, Standard Yoruba"/></div>
+      </div>
+      <div class="fg"><label class="fl">Example usage</label><textarea class="ft-area" id="wd-example" placeholder="Example sentence using this word…"></textarea></div>
+      <div class="fg"><label class="fl">Tone marks</label><input class="fi" id="wd-tone" type="text" placeholder="e.g. à-ṣà (low-mid)"/></div>
+      <div class="fg">
+        <label class="fl">Pronunciation audio</label>
+        <div class="audio-upload-zone" onclick="document.getElementById('wd-audio-file').click()" data-tip="Upload a clear pronunciation recording — only approved audio contributors should upload">
+          <div class="upload-icon-circle">🎙</div>
+          <div class="upload-text">Upload pronunciation recording</div>
+          <div class="upload-hint">MP3, WAV, M4A · Speak clearly with correct tone · Max 50MB</div>
+          <div class="audio-selected" id="wd-audio-selected">✓ File selected</div>
+        </div>
+        <input type="file" id="wd-audio-file" accept="audio/*" onchange="handleAudioSelect('wd-audio-file','wd-audio-selected')"/>
+        <div class="form-hint">Audio upload is for approved pronunciation contributors only. Submitting incorrect audio may result in your access code being revoked.</div>
+      </div>
+      <div class="fg"><label class="fl">Your name *</label><input class="fi" id="wd-contributor" type="text" placeholder="How you want to be credited"/></div>
+      <input type="hidden" id="wd-access-code-stored" value=""/>
+      <button type="submit" class="submit-btn" id="wd-submit-btn">Submit word to dictionary</button>
+    </form>
+  </div>
+
+
+  <!-- ═══ GLOBAL SEARCH MODAL ═══ -->
+  <div id="gsearch-overlay" class="gsearch-overlay" style="display:none;" onclick="if(event.target===this)closeGlobalSearch()">
+    <div class="gsearch-modal">
+      <div class="gsearch-header">
+        <input class="gsearch-input" id="gsearch-input" type="text" placeholder="Search Oriki, Owe, Ijala, festivals, dictionary…" oninput="runGlobalSearch(this.value)" onkeydown="if(event.key==='Escape')closeGlobalSearch()"/>
+        <button class="gsearch-close" onclick="closeGlobalSearch()" data-tip="Close search">×</button>
+      </div>
+      <div class="gsearch-body" id="gsearch-body">
+        <div class="gsearch-empty">Start typing to search across the entire archive</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ AUTH MODAL ═══ -->
+  <div id="auth-overlay" class="auth-overlay" style="display:none;" onclick="if(event.target===this)closeAuth()">
+    <div class="auth-modal">
+      <button class="auth-close" onclick="closeAuth()" data-tip="Close">×</button>
+      <div class="auth-logo">Ori<span>ki</span></div>
+      <div class="auth-title" id="auth-modal-title">Welcome back</div>
+      <div class="auth-sub" id="auth-modal-sub">Sign in to contribute, endorse, and track your submissions.</div>
+
+      <div class="auth-tabs">
+        <button class="auth-tab active" id="auth-tab-signin" onclick="switchAuthTab('signin')">Sign in</button>
+        <button class="auth-tab" id="auth-tab-signup" onclick="switchAuthTab('signup')">Create account</button>
+      </div>
+
+      <!-- Sign in form -->
+      <div id="auth-signin-form" class="auth-form">
+        <input class="auth-input" id="signin-email" type="email" placeholder="Email address" autocomplete="email"/>
+        <input class="auth-input" id="signin-password" type="password" placeholder="Password" autocomplete="current-password"/>
+        <div class="auth-err" id="signin-err"></div>
+        <button class="auth-btn" id="signin-btn" onclick="signIn()">Sign in</button>
+        <button class="auth-forgot" onclick="sendPasswordReset()">Forgot password?</button>
+        <div class="auth-ok" id="signin-ok"></div>
+      </div>
+
+      <!-- Sign up form -->
+      <div id="auth-signup-form" class="auth-form" style="display:none;">
+        <input class="auth-input" id="signup-name" type="text" placeholder="Your name (how you will be credited)" autocomplete="name"/>
+        <input class="auth-input" id="signup-email" type="email" placeholder="Email address" autocomplete="email"/>
+        <input class="auth-input" id="signup-password" type="password" placeholder="Password (min 6 characters)" autocomplete="new-password"/>
+        <div class="auth-err" id="signup-err"></div>
+        <button class="auth-btn" id="signup-btn" onclick="signUp()">Create account</button>
+        <div class="auth-ok" id="signup-ok"></div>
+      </div>
+
+      <div class="auth-divider">or</div>
+      <button class="auth-google-btn" onclick="signInGoogle()" data-tip="Sign in with your Google account">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 6.29C4.672 4.163 6.656 3.58 9 3.58z"/></svg>
+        Continue with Google
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ PROFILE TAB ═══ -->
+  <div id="tab-profile" class="tab">
+    <div id="profile-content"></div>
+  </div>
+
+</div>
+
+<script>
+const SURL = 'https://vprukxqdapkeeajyvugm.supabase.co';
+const SKEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZwcnVreHFkYXBrZWVhanl2dWdtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzczMzY1ODcsImV4cCI6MjA5MjkxMjU4N30.-3LsA1dES8ZUhetXjqy6DbaQ7ciTR8dgCUr6cxs0_rQ';
+const db = supabase.createClient(SURL, SKEY);
+
+// ── State ──────────────────────────────────────────────────────
+let orikiCat='', orikiTier='all', orikiSearch='';
+let oweSearch='';
+let festCat='', festSearch='';
+let prevTab='oriki';
+const localInteractions={};
+const localComments={};
+
+// ── Tab switcher ───────────────────────────────────────────────
+function showTab(name){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.nb[data-tab]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  const nb=document.querySelector('.nb[data-tab="'+name+'"]');
+  if(nb) nb.classList.add('active');
+}
+document.querySelectorAll('.nb[data-tab],.subtle-link[data-tab]').forEach(el=>{
+  el.addEventListener('click',function(){showTab(this.dataset.tab);});
+});
+
+// ── Helpers ────────────────────────────────────────────────────
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function catClass(c){
+  if(!c)return 't-default';
+  const l=c.toLowerCase();
+  if(l.includes('family'))return 't-family';
+  if(l.includes('town'))return 't-town';
+  if(l.includes('kingdom'))return 't-kingdom';
+  if(l.includes('orisa')||l.includes('orisa'))return 't-deity';
+  if(l.includes('warrior'))return 't-warrior';
+  if(l.includes('hunter'))return 't-hunter';
+  if(l.includes('lineage'))return 't-lineage';
+  if(l.includes('occupation'))return 't-occupation';
+  if(l.includes('personal'))return 't-personal';
+  return 't-default';
+}
+
+function trustBadge(e){
+  const s=(e.status||'community').toLowerCase();
+  if(s==='verified'||e.verified)return '<span class="tbadge tb-verified">⭐ Verified</span>';
+  if(s==='nominated'||e.nominated)return '<span class="tbadge tb-nominated">⬆ Nominated</span>';
+  if(s==='disputed')return '<span class="tbadge tb-disputed">⚑ Disputed</span>';
+  return '<span class="tbadge tb-community">Community</span>';
+}
+
+function timeSince(ts){
+  const d=Math.floor((new Date()-new Date(ts))/1000);
+  if(d<60)return 'just now';
+  if(d<3600)return Math.floor(d/60)+'m ago';
+  if(d<86400)return Math.floor(d/3600)+'h ago';
+  return Math.floor(d/86400)+'d ago';
+}
+
+// ── Render Oriki card ──────────────────────────────────────────
+function renderOrikiCard(e){
+  const ia=localInteractions[e.id]||{};
+  const endorse=(e.endorsements||0)+(ia.endorsed?1:0);
+  const dispute=(e.disputes||0)+(ia.disputed?1:0);
+  const meta=[e.town,e.state,e.kingdom].filter(Boolean).join(' · ');
+  const snippet=e.yoruba_text?e.yoruba_text.slice(0,140)+(e.yoruba_text.length>140?'…':''):'';
+  const isV=e.verified||e.status==='verified';
+  const isD=e.status==='disputed';
+  return `<div class="entry-card${isV?' is-verified':isD?' is-disputed':''}" onclick="openOrikiDetail('${e.id}')">
+    <div class="ec-top">
+      <div class="ec-name">${esc(e.name)}</div>
+      <div class="type-badge ${catClass(e.category)}">${esc(e.category||'')}</div>
+    </div>
+    ${meta?`<div class="ec-meta">${esc(meta)}${e.contributor_name?' · '+esc(e.contributor_name):''}</div>`:''}
+    ${snippet?`<div class="ec-snippet">${esc(snippet)}</div>`:''}
+    <div class="trust-row">${trustBadge(e)}${(localComments[e.id]||[]).length?`<span style="font-size:11px;color:var(--ink3);">${(localComments[e.id]||[]).length} comment(s)</span>`:''}</div>
+    <div class="ibar">
+      <button class="ib${ia.endorsed?' on-endorse':''}" data-tip="Endorse this entry — confirms you can corroborate its accuracy" onclick="event.stopPropagation();endorse('${e.id}',this)">👍 <span>${endorse}</span></button>
+      <button class="ib${ia.disputed?' on-dispute':''}" data-tip="Flag a dispute — mark inaccurate text, wrong attribution, or cultural misrepresentation" onclick="event.stopPropagation();flagDispute('${e.id}',this)">⚑ <span>${dispute}</span></button>
+      ${!isV?`<button class="ib${ia.nominated?' on-nominate':''}" data-tip="Nominate for Verified Corpus — entries with enough endorsements go to the advisory council for review" onclick="event.stopPropagation();nominate('${e.id}',this)">⬆</button>`:''}
+      <div class="ib-spacer"></div>
+      <button class="view-btn" data-tip="Open full entry — text, translation, meaning, sources, comments and related Oriki" onclick="event.stopPropagation();openOrikiDetail('${e.id}')">View full →</button>
+    </div>
+  </div>`;
+}
+
+// ── Render Owe card ────────────────────────────────────────────
+function renderOweCard(e){
+  const ia=localInteractions[e.id]||{};
+  const endorse=(e.endorsements||0)+(ia.endorsed?1:0);
+  const dispute=(e.disputes||0)+(ia.disputed?1:0);
+  return `<div class="owe-card">
+    <div class="owe-yoruba">${esc(e.proverb||'')}</div>
+    ${e.literal_translation?`<div class="owe-literal"><strong>Literal:</strong> ${esc(e.literal_translation)}</div>`:''}
+    ${e.meaning?`<div class="owe-meaning"><strong>Meaning:</strong> ${esc(e.meaning)}</div>`:''}
+    ${e.audio_url?renderAudioPlayer(e.audio_url,'Listen'):''}
+    <div class="trust-row" style="margin-top:8px;">${e.verified?'<span class="tbadge tb-verified">⭐ Verified</span>':e.status==='nominated'?'<span class="tbadge tb-nominated">⬆ Nominated</span>':'<span class="tbadge tb-community">Community</span>'}</div>
+    <div class="ibar" style="margin-top:6px;">
+      <button class="ib${ia.endorsed?' on-endorse':''}" data-tip="Endorse this proverb — confirm it is accurate" onclick="endorse('${e.id}',this)">👍 <span>${endorse}</span></button>
+      <button class="ib${ia.disputed?' on-dispute':''}" onclick="flagDispute('${e.id}',this)">⚑ <span>${dispute}</span></button>
+      ${!e.verified?`<button class="ib${ia.nominated?' on-nominate':''}" onclick="nominateEntry('${e.id}','owe_entries',this)" title="Nominate for Verified Corpus">⬆</button>`:''}
+      <div class="ib-spacer"></div>
+      <span style="font-size:11px;color:var(--ink3);">${esc(e.region||'Yorùbáland')}</span>
+    </div>
+  </div>`;
+}
+
+// ── Interaction handlers ───────────────────────────────────────
+async function endorse(id,btn){
+  if(!localInteractions[id])localInteractions[id]={};
+  if(localInteractions[id].endorsed){
+    localInteractions[id].endorsed=false;
+    btn.classList.remove('on-endorse');
+    const span=btn.querySelector('span');
+    if(span)span.textContent=Math.max(0,(parseInt(span.textContent)||1)-1);
+    return;
+  }
+  localInteractions[id].endorsed=true;
+  btn.classList.add('on-endorse');
+  const span=btn.querySelector('span');
+  if(span)span.textContent=(parseInt(span.textContent)||0)+1;
+  await db.from('interactions').insert({
+    entry_id:id,entry_table:'oriki_entries',
+    interaction_type:'endorse'
+  }).then(()=>{}).catch(()=>{});
+}
+async function nominate(id,btn){
+  await nominateEntry(id,'oriki_entries',btn);
+}
+async function nominateEntry(id,table,btn){
+  if(!localInteractions[id])localInteractions[id]={};
+  localInteractions[id].nominated=!localInteractions[id].nominated;
+  if(btn)btn.classList.toggle('on-nominate',localInteractions[id].nominated);
+  if(localInteractions[id].nominated){
+    await db.from('interactions').insert({
+      entry_id:id,entry_table:table,
+      interaction_type:'nominate'
+    }).then(()=>{}).catch(()=>{});
+    showFeedback('Nominated for Verified Corpus review.','ok');
+  }
+}
+async function flagDispute(id,btn){
+  if(!localInteractions[id])localInteractions[id]={};
+  localInteractions[id].disputed=!localInteractions[id].disputed;
+  const span=btn.querySelector('span');
+  if(span){const cur=parseInt(span.textContent)||0;span.textContent=localInteractions[id].disputed?cur+1:Math.max(0,cur-1);}
+  btn.classList.toggle('on-dispute',localInteractions[id].disputed);
+  if(localInteractions[id].disputed){
+    await db.from('interactions').insert({
+      entry_id:id,entry_table:'oriki_entries',
+      interaction_type:'dispute'
+    }).then(()=>{}).catch(()=>{});
+  }
+}
+
+// ── Open Oriki detail ──────────────────────────────────────────
+async function openOrikiDetail(id){
+  prevTab=document.querySelector('.tab.active').id.replace('tab-','');
+  showTab('detail');
+  document.getElementById('detail-content').innerHTML='<div class="state-msg">Loading…</div>';
+  const {data,error}=await db.from('oriki_entries').select('*').eq('id',id).single();
+  if(error||!data){document.getElementById('detail-content').innerHTML='<div class="err">Could not load entry.</div>';return;}
+  const e=data;
+  const ia=localInteractions[e.id]||{};
+  // Load comments from Supabase
+  const{data:csData}=await db.from('comments')
+    .select('*').eq('entry_id',e.id)
+    .eq('entry_table','oriki_entries')
+    .order('created_at',{ascending:true});
+  const cs=csData||localComments[e.id]||[];
+  const isV=e.verified||e.status==='verified';
+  document.getElementById('detail-content').innerHTML=`
+    <div class="detail-title">${esc(e.name)}</div>
+    <div class="detail-meta-row">
+      <div class="type-badge ${catClass(e.category)}">${esc(e.category||'')}</div>
+      ${trustBadge(e)}
+      ${e.town?`<span style="font-size:11px;color:var(--ink3);">${esc(e.town)}</span>`:''}
+      ${e.kingdom?`<span style="font-size:11px;color:var(--ink3);">${esc(e.kingdom)}</span>`:''}
+    </div>
+    ${e.yoruba_text?`<div class="d-block"><div class="d-block-label">Yoruba text</div><div class="oriki-full">${esc(e.yoruba_text).replace(/\n/g,'<br>')}</div></div>`:''}
+    ${e.translation?`<div class="d-block"><div class="d-block-label">Translation</div><div class="trans-text">${esc(e.translation).replace(/\n/g,'<br>')}</div></div>`:''}
+    ${e.notes?`<div class="d-block" style="background:var(--amber-pale);border-color:var(--amber-light);"><div class="d-block-label" style="color:var(--amber);">Historical context</div><div class="trans-text">${esc(e.notes).replace(/\n/g,'<br>')}</div></div>`:''}
+    ${e.source_name?`<div class="d-block" style="background:var(--blue-bg);"><div class="d-block-label" style="color:var(--blue);">Source</div><div class="trans-text">${esc(e.source_name)}${e.source_url?` — <a href="${esc(e.source_url)}" target="_blank" style="color:var(--blue);">link</a>`:''}</div></div>`:''}
+    <div class="d-block"><div class="d-block-label">Submitted by</div><div class="trans-text">${esc(e.contributor_name||'Anonymous')} · ${e.created_at?timeSince(e.created_at):''}</div></div>
+    <div class="ibar" style="background:var(--bg2);border-radius:var(--r-md);padding:10px 12px;margin-bottom:12px;">
+      <button class="ib${ia.endorsed?' on-endorse':''}" data-tip="Endorse — confirm you can corroborate this entry" onclick="endorse('${e.id}',this)">👍 Endorse <span>${(e.endorsements||0)+(ia.endorsed?1:0)}</span></button>
+      <button class="ib${ia.disputed?' on-dispute':''}" data-tip="Flag a dispute — select a reason: inaccurate text, wrong attribution, cultural misrepresentation, etc." onclick="flagDispute('${e.id}',this)">⚑ Dispute <span>${(e.disputes||0)+(ia.disputed?1:0)}</span></button>
+      ${!isV?`<button class="ib${ia.nominated?' on-nominate':''}" data-tip="Nominate this entry for Verified Corpus review by the advisory council" onclick="nominate('${e.id}',this)">⬆ Nominate for verification</button>`:''}
+    </div>
+    ${renderShareBar(e)}
+    <div class="d-block links-section" id="links-${e.id}">
+      <div class="d-block-label">Related Oriki <span id="links-count-${e.id}" style="color:var(--ink3);font-weight:400;"></span></div>
+      <div id="links-list-${e.id}"><div style="font-size:12px;color:var(--ink3);">Loading links…</div></div>
+      <div class="add-link-form" id="add-link-form-${e.id}" style="display:none;">
+        <div class="add-link-title">Link to another Oriki</div>
+        <div style="margin-bottom:8px;">
+          <label class="fl" style="font-size:10px;">Search for Oriki to link</label>
+          <input class="fi" id="link-search-${e.id}" type="text" placeholder="Type name to search…" oninput="searchForLink('${e.id}',this.value)" style="font-size:12px;padding:6px 10px;"/>
+          <div id="link-results-${e.id}" style="margin-top:4px;"></div>
+        </div>
+        <div style="margin-bottom:8px;">
+          <label class="fl" style="font-size:10px;">Link type</label>
+          <select class="fs" id="link-type-${e.id}" style="font-size:12px;padding:6px 10px;">
+            <option value="variant">Variant — same Oriki, different version</option>
+            <option value="shared_ancestor">Shared ancestor — references same person</option>
+            <option value="same_lineage">Same lineage — same compound or family</option>
+            <option value="same_deity">Same deity — different regional versions</option>
+            <option value="migration_link">Migration link — diaspora or historical migration</option>
+            <option value="contradicts">Contradicts — conflicting claims</option>
+          </select>
+        </div>
+        <div style="margin-bottom:8px;">
+          <label class="fl" style="font-size:10px;">Note (optional)</label>
+          <input class="fi" id="link-note-${e.id}" type="text" placeholder="e.g. Ekiti dialect version of the same lineage" style="font-size:12px;padding:6px 10px;"/>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center;">
+          <input class="fi" id="link-submitter-${e.id}" type="text" placeholder="Your name" style="flex:1;font-size:12px;padding:6px 10px;"/>
+          <button class="post-btn" onclick="submitLink('${e.id}')">Submit link</button>
+          <button class="post-btn" style="background:var(--ink2);" onclick="document.getElementById('add-link-form-${e.id}').style.display='none'">Cancel</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap;">
+        <button class="variant-btn" data-tip="Connect this Oriki to another related entry already in the archive" onclick="toggleLinkForm('${e.id}')">+ Link related Oriki</button>
+        <button class="variant-btn" data-tip="Create a new entry based on this Oriki — for a different version, dialect, or family branch" style="background:var(--amber-pale);color:var(--amber);border-color:var(--amber-light);" onclick="submitVariant('${esc(e.name)}')">+ Submit a variant</button>
+      </div>
+    </div>
+    <div class="section-title" style="margin-bottom:10px;">Comments & discussion (${cs.length})</div>
+    <div id="comments-${e.id}">
+      ${cs.length===0?'<div style="font-size:13px;color:var(--ink3);margin-bottom:12px;">No comments yet. Add context, corrections, or questions.</div>':cs.map(renderComment).join('')}
+    </div>
+    <div class="comment-form">
+      <div style="font-size:11px;font-weight:600;color:var(--ink2);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;">Add a comment</div>
+      <div class="ct-pills">
+        <button class="ct-pill active" data-ctype="General">General</button>
+        <button class="ct-pill" data-ctype="Context">Add context</button>
+        <button class="ct-pill" data-ctype="Correction">Correction</button>
+        <button class="ct-pill" data-ctype="Dispute">Dispute</button>
+      </div>
+      <textarea id="ct-${e.id}" placeholder="Comments are permanent and cannot be deleted."></textarea>
+      <div class="comment-submit-row">
+        <input class="cn-input" id="cn-${e.id}" placeholder="Your name"/>
+        <button class="post-btn" data-tip="Post comment — permanent and cannot be deleted" onclick="postComment('${e.id}')">Post</button>
+      </div>
+      <div style="font-size:11px;color:var(--ink3);margin-top:6px;">All comments are permanent records.</div>
+    </div>`;
+  document.querySelectorAll('.ct-pill').forEach(p=>{
+    p.addEventListener('click',function(){document.querySelectorAll('.ct-pill').forEach(x=>x.classList.remove('active'));this.classList.add('active');});
+  });
+  // Load related Oriki links
+  loadOrikiLinks(e.id);
+}
+
+function renderComment(c){
+  const tmap={Dispute:'cit-dispute',Correction:'cit-correction',Context:'cit-context'};
+  // Handle both local format and Supabase format
+  const author=c.author||c.author_name||'Anonymous';
+  const text=c.text||c.comment_text||'';
+  const type=c.type||c.comment_type||'General';
+  const time=c.time||(c.created_at?timeSince(c.created_at):'');
+  return `<div class="comment-item"><div class="ci-header"><span class="ci-author">${esc(author)}</span><span class="ci-time">${esc(time)}</span></div>${type!=='General'?`<span class="ci-type ${tmap[type]||''}">${esc(type)}</span>`:''}<div class="ci-text">${esc(text)}</div></div>`;
+}
+
+async function postComment(entryId){
+  const text=document.getElementById('ct-'+entryId).value.trim();
+  const name=document.getElementById('cn-'+entryId).value.trim();
+  const typeEl=document.querySelector('.ct-pill.active');
+  const ctype=typeEl?typeEl.dataset.ctype:'General';
+  if(!text||!name){showFeedback('Please enter your name and comment.','err');return;}
+  const btn=document.querySelector(`#comments-${entryId} ~ .comment-form .post-btn`);
+  if(btn){btn.disabled=true;btn.textContent='Posting…';}
+  const{error}=await db.from('comments').insert({
+    entry_id:entryId,
+    entry_table:'oriki_entries',
+    author_name:name,
+    comment_text:text,
+    comment_type:ctype,
+    user_id:getCurrentUserId()
+  });
+  if(btn){btn.disabled=false;btn.textContent='Post';}
+  if(error){showFeedback('Comment failed: '+error.message,'err');return;}
+  const c={author:name,text,type:ctype,time:'just now',endorsements:0};
+  if(!localComments[entryId])localComments[entryId]=[];
+  localComments[entryId].push(c);
+  const container=document.getElementById('comments-'+entryId);
+  if(container){
+    const empty=container.querySelector('.state-msg,div[style]');
+    if(empty)container.innerHTML='';
+    container.insertAdjacentHTML('beforeend',renderComment(c));
+  }
+  document.getElementById('ct-'+entryId).value='';
+}
+
+function toggleLinkForm(entryId){
+  const form=document.getElementById('add-link-form-'+entryId);
+  if(form)form.style.display=form.style.display==='none'||form.style.display===''?'block':'none';
+}
+function submitVariant(originalName){
+  showTab('submit');
+  document.getElementById('stt-oriki').click();
+  setTimeout(()=>{document.getElementById('o-name').value=originalName+' (variant)';document.getElementById('o-name').focus();},100);
+}
+
+// ── Load Oriki links for detail view ──────────────────────────
+async function loadOrikiLinks(entryId){
+  const listEl=document.getElementById('links-list-'+entryId);
+  const countEl=document.getElementById('links-count-'+entryId);
+  if(!listEl)return;
+  try{
+    // Query both directions
+    const{data:linksA}=await db.from('oriki_links').select('*,entry_b:oriki_entries!entry_id_b(id,name,category,town)').eq('entry_id_a',entryId);
+    const{data:linksB}=await db.from('oriki_links').select('*,entry_a:oriki_entries!entry_id_a(id,name,category,town)').eq('entry_id_b',entryId);
+    const allLinks=[
+      ...(linksA||[]).map(l=>({...l,linked:l.entry_b,direction:'a'})),
+      ...(linksB||[]).map(l=>({...l,linked:l.entry_a,direction:'b'}))
+    ];
+    if(countEl)countEl.textContent=allLinks.length?`(${allLinks.length})`:'';
+    if(!allLinks.length){
+      listEl.innerHTML='<div style="font-size:12px;color:var(--ink3);">No related Oriki linked yet.</div>';
+      return;
+    }
+    listEl.innerHTML=allLinks.map(l=>{
+      const linked=l.linked||{};
+      const ltClass='lt-'+(l.link_type||'default').replace(/\s/g,'_');
+      const ltLabel=(l.link_type||'related').replace(/_/g,' ');
+      return `<div class="link-card" onclick="openOrikiDetail('${linked.id||''}')">
+        <div>
+          <span class="link-type-badge ${ltClass}">${esc(ltLabel)}</span>
+        </div>
+        <div class="link-info">
+          <div class="link-name">${esc(linked.name||'Unknown')}</div>
+          ${linked.town?`<div class="link-note">${esc(linked.town)}${linked.category?' · '+esc(linked.category):''}</div>`:''}
+          ${l.link_note?`<div class="link-note" style="font-style:italic;margin-top:2px;">${esc(l.link_note)}</div>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }catch(err){
+    if(listEl)listEl.innerHTML='<div style="font-size:12px;color:var(--ink3);">Could not load links.</div>';
+  }
+}
+
+// ── Search for Oriki to link ───────────────────────────────────
+let linkSearchTimeout=null;
+async function searchForLink(entryId, query){
+  const resultsEl=document.getElementById('link-results-'+entryId);
+  if(!resultsEl)return;
+  if(!query.trim()){resultsEl.innerHTML='';return;}
+  clearTimeout(linkSearchTimeout);
+  linkSearchTimeout=setTimeout(async()=>{
+    const{data}=await db.from('oriki_entries').select('id,name,category,town')
+      .ilike('name','%'+query+'%').limit(5);
+    if(!data||!data.length){resultsEl.innerHTML='<div style="font-size:12px;color:var(--ink3);padding:4px 0;">No entries found.</div>';return;}
+    resultsEl.innerHTML=data.map(e=>`
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:5px 8px;background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-md);margin-bottom:4px;cursor:pointer;"
+           onclick="selectLinkTarget('${entryId}','${e.id}','${esc(e.name)}')">
+        <span style="font-size:12px;font-weight:500;">${esc(e.name)}</span>
+        <span style="font-size:11px;color:var(--ink3);">${esc(e.town||'')}${e.category?' · '+esc(e.category):''}</span>
+      </div>`).join('');
+  },300);
+}
+
+let selectedLinkTarget={};
+function selectLinkTarget(entryId, targetId, targetName){
+  selectedLinkTarget[entryId]={id:targetId,name:targetName};
+  const searchInput=document.getElementById('link-search-'+entryId);
+  const resultsEl=document.getElementById('link-results-'+entryId);
+  if(searchInput)searchInput.value=targetName+' ✓';
+  if(resultsEl)resultsEl.innerHTML='';
+}
+
+async function submitLink(entryId){
+  const target=selectedLinkTarget[entryId];
+  if(!target){showFeedback('Please select an Oriki to link to.','err');return;}
+  const linkType=document.getElementById('link-type-'+entryId)?.value||'variant';
+  const linkNote=document.getElementById('link-note-'+entryId)?.value.trim()||null;
+  const submitter=document.getElementById('link-submitter-'+entryId)?.value.trim()||null;
+  const{error}=await db.from('oriki_links').insert({
+    entry_id_a:entryId,
+    entry_id_b:target.id,
+    link_type:linkType,
+    link_note:linkNote,
+    submitted_by:submitter,
+    verified:false
+  });
+  if(error){showFeedback('Link failed: '+error.message,'err');return;}
+  document.getElementById('add-link-form-'+entryId).style.display='none';
+  selectedLinkTarget[entryId]=null;
+  showFeedback('Link submitted. Thank you.','ok');
+  loadOrikiLinks(entryId);
+}
+
+document.getElementById('detail-back').addEventListener('click',()=>showTab(prevTab));
+
+// ── Load Oriki ─────────────────────────────────────────────────
+async function loadOriki(){
+  const list=document.getElementById('oriki-list');
+  list.innerHTML='<div class="state-msg">Loading…</div>';
+  try{
+    let q=db.from('oriki_entries').select('*').order('created_at',{ascending:false});
+    if(orikiTier==='verified')q=q.eq('verified',true);
+    if(orikiTier==='community')q=q.eq('verified',false);
+    if(orikiCat)q=q.ilike('category','%'+orikiCat+'%');
+    if(orikiSearch.trim())q=q.or(`name.ilike.%${orikiSearch}%,town.ilike.%${orikiSearch}%,yoruba_text.ilike.%${orikiSearch}%,kingdom.ilike.%${orikiSearch}%`);
+    const {data,error}=await q;
+    if(error){list.innerHTML=`<div class="err">${esc(error.message)}</div>`;return;}
+    if(!data||!data.length){
+      list.innerHTML='<div class="state-msg">No entries found.<br/><button class="subtle-link" data-tab="submit" style="margin-top:8px;">Submit the first one →</button></div>';
+      list.querySelector('[data-tab]')?.addEventListener('click',function(){showTab(this.dataset.tab);});
+      return;
+    }
+    list.innerHTML=data.map(renderOrikiCard).join('');
+  }catch(err){list.innerHTML=`<div class="err">${esc(err.message)}</div>`;}
+}
+
+// ── Load Owe ───────────────────────────────────────────────────
+async function loadOwe(){
+  const list=document.getElementById('owe-list');
+  list.innerHTML='<div class="state-msg">Loading Owe…</div>';
+  try{
+    let q=db.from('owe_entries').select('*').order('created_at',{ascending:false});
+    if(oweSearch.trim())q=q.or(`proverb.ilike.%${oweSearch}%,literal_translation.ilike.%${oweSearch}%,meaning.ilike.%${oweSearch}%`);
+    const {data,error}=await q;
+    if(error){list.innerHTML=`<div class="err">${esc(error.message)}</div>`;return;}
+    if(!data||!data.length){
+      list.innerHTML='<div class="state-msg">No Owe yet.<br/><button class="subtle-link" data-tab="submit" style="margin-top:8px;">Submit the first proverb →</button></div>';
+      list.querySelector('[data-tab]')?.addEventListener('click',function(){showTab(this.dataset.tab);});
+      return;
+    }
+    list.innerHTML=data.map(renderOweCard).join('');
+  }catch(err){list.innerHTML=`<div class="err">${esc(err.message)}</div>`;}
+}
+
+// ── Load Ijala ────────────────────────────────────────────────
+let ijalaSearch='';
+async function loadIjala(){
+  const list=document.getElementById('ijala-list');
+  if(!list)return;
+  list.innerHTML='<div class="state-msg">Loading Ijala…</div>';
+  try{
+    let q=db.from('ijala_entries').select('*').order('created_at',{ascending:false});
+    if(ijalaSearch.trim())q=q.or(`title.ilike.%${ijalaSearch}%,yoruba_text.ilike.%${ijalaSearch}%,associated_animal.ilike.%${ijalaSearch}%,region.ilike.%${ijalaSearch}%`);
+    const{data,error}=await q;
+    if(error){list.innerHTML=`<div class="err">${esc(error.message)}</div>`;return;}
+    if(!data||!data.length){
+      list.innerHTML='<div class="state-msg">No Ijala entries yet.<br/><button class="subtle-link" data-tab="submit" style="margin-top:8px;">Submit the first one →</button></div>';
+      list.querySelector('[data-tab]')?.addEventListener('click',function(){showTab(this.dataset.tab);});
+      return;
+    }
+    list.innerHTML=data.map(e=>{
+      const snippet=e.yoruba_text?e.yoruba_text.slice(0,140)+(e.yoruba_text.length>140?'…':''):'';
+      const meta=[e.associated_animal,e.region,e.town].filter(Boolean).join(' · ');
+      return `<div class="entry-card">
+        <div class="ec-top">
+          <div class="ec-name">${esc(e.title)}</div>
+          <div class="type-badge t-hunter">Ijala</div>
+        </div>
+        ${meta?`<div class="ec-meta">${esc(meta)}${e.contributor_name?' · '+esc(e.contributor_name):''}</div>`:''}
+        ${snippet?`<div class="ec-snippet">${esc(snippet)}</div>`:''}
+        ${e.audio_url?renderAudioPlayer(e.audio_url,'Listen'):''}
+        <div class="trust-row">${e.verified?'<span class="tbadge tb-verified">⭐ Verified</span>':e.status==='nominated'?'<span class="tbadge tb-nominated">⬆ Nominated</span>':'<span class="tbadge tb-community">Community</span>'}</div>
+        <div class="ibar">
+          <button class="ib" onclick="endorse('${e.id}',this)">👍 <span>${e.endorsements||0}</span></button>
+          <button class="ib" onclick="flagDispute('${e.id}',this)">⚑ <span>${e.disputes||0}</span></button>
+          ${!e.verified?`<button class="ib" onclick="nominateEntry('${e.id}','ijala_entries',this)" title="Nominate for verification">⬆</button>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }catch(err){list.innerHTML=`<div class="err">${esc(err.message)}</div>`;}
+}
+
+// ── Load stats ─────────────────────────────────────────────────
+async function loadStats(){
+  try{
+    const {count:oc}=await db.from('oriki_entries').select('*',{count:'exact',head:true});
+    if(oc!==null)document.getElementById('stat-oriki').textContent=oc.toLocaleString();
+    const {count:vc}=await db.from('oriki_entries').select('*',{count:'exact',head:true}).eq('verified',true);
+    if(vc!==null)document.getElementById('stat-verified').textContent=vc.toLocaleString();
+    const {data:towns}=await db.from('oriki_entries').select('town');
+    if(towns)document.getElementById('stat-towns').textContent=new Set(towns.map(r=>r.town).filter(Boolean)).size;
+    const {count:owc}=await db.from('owe_entries').select('*',{count:'exact',head:true});
+    if(owc!==null)document.getElementById('stat-owe').textContent=owc.toLocaleString();
+    const {count:ovc}=await db.from('owe_entries').select('*',{count:'exact',head:true}).eq('verified',true);
+    if(ovc!==null)document.getElementById('stat-owe-verified').textContent=ovc.toLocaleString();
+    const {data:oregions}=await db.from('owe_entries').select('region');
+    if(oregions)document.getElementById('stat-owe-regions').textContent=new Set(oregions.map(r=>r.region).filter(Boolean)).size;
+    // Ijala stats
+    const ijalaStatEl=document.getElementById('stat-ijala');
+    if(ijalaStatEl){
+      const{count:ijc}=await db.from('ijala_entries').select('*',{count:'exact',head:true});
+      if(ijc!==null)ijalaStatEl.textContent=ijc.toLocaleString();
+      const{count:ijvc}=await db.from('ijala_entries').select('*',{count:'exact',head:true}).eq('verified',true);
+      const ijvEl=document.getElementById('stat-ijala-verified');
+      if(ijvc!==null&&ijvEl)ijvEl.textContent=ijvc.toLocaleString();
+      const{data:ijregions}=await db.from('ijala_entries').select('region');
+      const ijrEl=document.getElementById('stat-ijala-regions');
+      if(ijregions&&ijrEl)ijrEl.textContent=new Set(ijregions.map(r=>r.region).filter(Boolean)).size;
+    }
+  }catch(e){console.warn('Stats error:',e.message);}
+}
+
+// ── Tier & filter pills ────────────────────────────────────────
+document.querySelectorAll('.tier-btn').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    document.querySelectorAll('.tier-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');orikiTier=this.dataset.tier;loadOriki();
+  });
+});
+document.querySelectorAll('#oriki-filters .pill').forEach(p=>{
+  p.addEventListener('click',function(){
+    document.querySelectorAll('#oriki-filters .pill').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');orikiCat=this.dataset.cat;loadOriki();
+  });
+});
+document.querySelectorAll('#fest-filters .pill').forEach(p=>{
+  p.addEventListener('click',function(){
+    document.querySelectorAll('#fest-filters .pill').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');festCat=this.dataset.fcat;renderFests();
+  });
+});
+
+// ── Search ─────────────────────────────────────────────────────
+document.getElementById('oriki-search-btn').addEventListener('click',()=>{orikiSearch=document.getElementById('oriki-search').value;loadOriki();});
+document.getElementById('oriki-search').addEventListener('keydown',e=>{if(e.key==='Enter'){orikiSearch=e.target.value;loadOriki();}});
+document.getElementById('owe-search-btn').addEventListener('click',()=>{oweSearch=document.getElementById('owe-search').value;loadOwe();});
+document.getElementById('owe-search').addEventListener('keydown',e=>{if(e.key==='Enter'){oweSearch=e.target.value;loadOwe();}});
+document.getElementById('ijala-search-btn').addEventListener('click',()=>{ijalaSearch=document.getElementById('ijala-search').value;loadIjala();});
+document.getElementById('ijala-search').addEventListener('keydown',e=>{if(e.key==='Enter'){ijalaSearch=e.target.value;loadIjala();}});
+document.getElementById('fest-search-btn').addEventListener('click',()=>{festSearch=document.getElementById('fest-search').value;renderFests();});
+document.getElementById('fest-search').addEventListener('keydown',e=>{if(e.key==='Enter'){festSearch=e.target.value;renderFests();}});
+
+// ── Submit type toggle ─────────────────────────────────────────
+['oriki','owe','ijala','word'].forEach(type=>{
+  document.getElementById('stt-'+type).addEventListener('click',function(){
+    document.querySelectorAll('.stt-btn').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    ['oriki','owe','ijala','word'].forEach(t=>{
+      document.getElementById('form-'+t).style.display=t===type?'':'none';
+    });
+  });
+});
+
+// ── Submit Oriki ───────────────────────────────────────────────
+document.getElementById('form-oriki').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const name=document.getElementById('o-name').value.trim();
+  const category=document.getElementById('o-category').value;
+  const town=document.getElementById('o-town').value.trim();
+  const yoruba=document.getElementById('o-yoruba').value.trim();
+  const contributor=document.getElementById('o-contributor').value.trim();
+  if(!name||!category||!town||!yoruba||!contributor){showFeedback('Please fill in all required fields.','err');return;}
+  const btn=document.getElementById('o-submit-btn');
+  btn.disabled=true;btn.textContent='Submitting…';
+  // Upload audio if provided
+  let audioUrl=null;
+  const audioFile=document.getElementById('o-audio-file')?.files[0];
+
+  if(audioFile){
+    const ext=audioFile.name.split('.').pop();
+    const tempId=crypto.randomUUID();
+    const path=`oriki-audio/${tempId}.${ext}`;
+    const{data:uploadData,error:uploadError}=await db.storage.from('oriki-audio').upload(path,audioFile,{upsert:true});
+    if(!uploadError){
+      const{data:urlData}=db.storage.from('oriki-audio').getPublicUrl(path);
+      audioUrl=urlData?.publicUrl||null;
+    }else{
+      console.warn('Audio upload failed:',uploadError.message);
+    }
+  }
+
+  const translationVal=document.getElementById('o-translation').value.trim();
+  const meaningVal=document.getElementById('o-meaning').value.trim();
+  const fullTranslation=[
+    translationVal?'TRANSLATION:\n'+translationVal:'',
+    meaningVal?'MEANING / CULTURAL SIGNIFICANCE:\n'+meaningVal:''
+  ].filter(Boolean).join('\n\n')||null;
+  const {error}=await db.from('oriki_entries').insert({
+    name,category,town,
+    state:document.getElementById('o-state').value||null,
+    kingdom:document.getElementById('o-kingdom').value.trim()||null,
+    region:document.getElementById('o-region').value,
+    occasion:document.getElementById('o-occasion').value||null,
+    yoruba_text:yoruba,
+    translation:fullTranslation,
+    notes:document.getElementById('o-notes').value.trim()||null,
+    source_name:document.getElementById('o-source-name').value.trim()||null,
+    source_url:document.getElementById('o-source-url').value.trim()||null,
+    contributor_name:contributor,
+    audio_url:audioUrl,
+    user_id:getCurrentUserId(),
+    verified:false,status:'community'
+  });
+  btn.disabled=false;btn.textContent='Submit to community archive';
+  if(error){showFeedback('Submission failed: '+error.message,'err');}
+  else{showFeedback('✓ Submitted to community archive. Thank you.','ok');this.reset();loadOriki();loadStats();}
+});
+
+// ── Submit Owe ─────────────────────────────────────────────────
+document.getElementById('form-owe').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const proverb=document.getElementById('ow-proverb').value.trim();
+  const literal=document.getElementById('ow-literal').value.trim();
+  const meaning=document.getElementById('ow-meaning').value.trim();
+  const contributor=document.getElementById('ow-contributor').value.trim();
+  if(!proverb||!literal||!meaning||!contributor){showFeedback('Please fill in all required fields.','err');return;}
+  const btn=document.getElementById('ow-submit-btn');
+  btn.disabled=true;btn.textContent='Submitting…';
+  let oweAudioUrl=null;
+  const oweAudioFile=document.getElementById('ow-audio-file')?.files[0];
+  if(oweAudioFile){
+    const owExt=oweAudioFile.name.split('.').pop();
+    const owPath=`owe-audio/${crypto.randomUUID()}.${owExt}`;
+    const{error:owAe}=await db.storage.from('oriki-audio').upload(owPath,oweAudioFile,{upsert:true});
+    if(!owAe){const{data:owUd}=db.storage.from('oriki-audio').getPublicUrl(owPath);oweAudioUrl=owUd?.publicUrl||null;}
+  }
+  const {error}=await db.from('owe_entries').insert({
+    proverb,literal_translation:literal,meaning,
+    usage_context:document.getElementById('ow-context').value.trim()||null,
+    region:document.getElementById('ow-region').value,
+    contributor_name:contributor,
+    source_name:document.getElementById('ow-source').value.trim()||null,
+    audio_url:oweAudioUrl,
+    user_id:getCurrentUserId(),
+    verified:false
+  });
+  btn.disabled=false;btn.textContent='Submit Owe to archive';
+  if(error){showFeedback('Submission failed: '+error.message,'err');}
+  else{showFeedback('✓ Owe submitted. Thank you.','ok');this.reset();loadOwe();loadStats();}
+});
+
+// ── Submit Ijala ───────────────────────────────────────────────
+document.getElementById('form-ijala').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const title=document.getElementById('ij-title').value.trim();
+  const yoruba=document.getElementById('ij-yoruba').value.trim();
+  const contributor=document.getElementById('ij-contributor').value.trim();
+  if(!title||!yoruba||!contributor){showFeedback('Please fill in all required fields.','err');return;}
+  const btn=document.getElementById('ij-submit-btn');
+  btn.disabled=true;btn.textContent='Submitting…';
+  let ijAudioUrl=null;
+  const ijAudioFile=document.getElementById('ij-audio-file')?.files[0];
+  if(ijAudioFile){
+    const ijExt=ijAudioFile.name.split('.').pop();
+    const ijPath=`ijala-audio/${crypto.randomUUID()}.${ijExt}`;
+    const{error:ijAe}=await db.storage.from('oriki-audio').upload(ijPath,ijAudioFile,{upsert:true});
+    if(!ijAe){const{data:ijUd}=db.storage.from('oriki-audio').getPublicUrl(ijPath);ijAudioUrl=ijUd?.publicUrl||null;}
+  }
+  const {error}=await db.from('ijala_entries').insert({
+    title,yoruba_text:yoruba,
+    associated_animal:document.getElementById('ij-animal').value.trim()||null,
+    hunter_context:document.getElementById('ij-context').value.trim()||null,
+    region:document.getElementById('ij-region').value.trim()||null,
+    town:document.getElementById('ij-town').value.trim()||null,
+    translation:document.getElementById('ij-translation').value.trim()||null,
+    source_name:document.getElementById('ij-source').value.trim()||null,
+    contributor_name:contributor,
+    audio_url:ijAudioUrl,
+    verified:false
+  });
+  btn.disabled=false;btn.textContent='Submit Ijala to archive';
+  if(error){showFeedback('Submission failed: '+error.message,'err');}
+  else{showFeedback('✓ Ijala submitted. Thank you.','ok');this.reset();}
+});
+
+// ── Submit Yoruba Word ─────────────────────────────────────────
+document.getElementById('form-word').addEventListener('submit',async function(e){
+  e.preventDefault();
+  const word=document.getElementById('wd-word').value.trim();
+  const meaning=document.getElementById('wd-meaning').value.trim();
+  const contributor=document.getElementById('wd-contributor').value.trim();
+  if(!word||!meaning||!contributor){showFeedback('Please fill in all required fields.','err');return;}
+  const btn=document.getElementById('wd-submit-btn');
+  btn.disabled=true;btn.textContent='Submitting…';
+  let wdAudioUrl=null;
+  const wdAudioFile=document.getElementById('wd-audio-file')?.files[0];
+  if(wdAudioFile){
+    const wdExt=wdAudioFile.name.split('.').pop();
+    const wdPath=`dictionary-audio/${crypto.randomUUID()}.${wdExt}`;
+    const{error:wdAe}=await db.storage.from('oriki-audio').upload(wdPath,wdAudioFile,{upsert:true});
+    if(!wdAe){const{data:wdUd}=db.storage.from('oriki-audio').getPublicUrl(wdPath);wdAudioUrl=wdUd?.publicUrl||null;}
+  }
+  const accessCode=document.getElementById('wd-access-code-stored')?.value||null;
+  const {error}=await db.from('yoruba_dictionary').insert({
+    word,meaning,
+    part_of_speech:document.getElementById('wd-pos').value||null,
+    region:document.getElementById('wd-region').value.trim()||null,
+    example_usage:document.getElementById('wd-example').value.trim()||null,
+    contributor_name:contributor,
+    audio_url:wdAudioUrl,
+    contributor_code:accessCode,
+    audio_contributor_verified:!!wdAudioUrl,
+    verified:false
+  });
+  btn.disabled=false;btn.textContent='Submit word to dictionary';
+  if(error){showFeedback('Submission failed: '+error.message,'err');}
+  else{showFeedback('✓ Word submitted. Thank you.','ok');this.reset();}
+});
+
+// ── Feedback helper ────────────────────────────────────────────
+function showFeedback(msg,type){
+  const el=document.getElementById('submit-feedback');
+  el.innerHTML=`<div class="${type==='err'?'err':'ok'}">${esc(msg)}</div>`;
+  setTimeout(()=>{el.innerHTML='';},6000);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// FESTIVALS (hardcoded — move to festival_entries table later)
+// ═══════════════════════════════════════════════════════════════
+const FESTIVALS=[
+  {id:'osun-osogbo',name:'Osun-Osogbo Festival',yoruba_name:'Odun Osun Osogbo',category:'Deity',tags:['Deity','Heritage','Diaspora'],banner:'linear-gradient(135deg,#1A4D2E,#2D8A5A)',month:'August',month_num:8,duration:7,date_note:'Date set annually by the Ataoja of Osogbo — typically second or third week of August',town:'Osogbo',state:'Osun State',site:'Osun Sacred Grove',deity:'Osun (Oshun)',unesco:true,significance:'The Osun-Osogbo Festival honours the Yoruba goddess Osun, deity of rivers, fertility, and love. Held in the sacred grove at Osogbo — a UNESCO World Heritage Site — it draws Yoruba devotees, diaspora practitioners from Brazil, Cuba, and the US, and cultural visitors from across the world.',history:'The festival traces its origin to a covenant between the Ataoja of Osogbo and Osun. The grove has been continuously maintained for over 200 years. UNESCO inscribed it as a World Heritage Site in 2005.',events:[{day:1,title:'Iwopopo — Cleansing ceremony',desc:'The town is ritually cleansed. Sweeping of the palace and sacred paths. No noise or drumming.'},{day:2,title:'Ina Olujumerindinlogun — Festival of light',desc:'Sixteen lit lamps placed at the palace. Marks the formal opening.'},{day:5,title:'Arugba procession',desc:'The Arugba — a virgin carrying the sacred calabash — leads thousands to the grove.'},{day:7,title:'Grand finale',desc:'Final prayers at the river, offerings made to Osun, public celebration.'}],oriki_links:['Oriki Osun','Oriki Osogbo'],sources:['UNESCO — whc.unesco.org/en/list/1118','Drewal & Mason, Beads Body and Soul (UCLA, 1998)'],travel:{nearest_city:'Ibadan (80km), Lagos (240km)',transport:'Drive or bus from Lagos via Ibadan.',accommodation:'Hotels in Osogbo or Ibadan. Book 3-4 months in advance.',from_diaspora:'Fly into Lagos (LOS). Arrive 3 days early.',dress_code:'White or yellow clothing preferred. Remove shoes at the grove.',photography:'Permitted in most public areas. Inner sanctum requires permission.',visitor_programme:'Contact the Osun State Tourism Board for diaspora visitor programmes.',budget:'From UK: £800-1,200. From US: $900-1,400.'},citable:true,verified:true},
+  {id:'olojo',name:'Olojo Festival',yoruba_name:'Odun Olojo',category:'Royal',tags:['Royal','Deity'],banner:'linear-gradient(135deg,#4A1B0C,#8B3A1A)',month:'October',month_num:10,duration:3,date_note:'Typically October — date set by the Ooni of Ife annually',town:'Ile-Ife',state:'Osun State',site:"Ooni's Palace, Ile-Ife",deity:'Ogun (deity of iron)',unesco:false,significance:'Olojo marks the first day Ogun descended to earth, and the moment the Ooni of Ife dons the Aare crown — the most sacred crown in Yorubaland, said to have been worn by Oduduwa himself.',history:"The festival is rooted in the founding mythology of Ile-Ife. The Aare crown is kept hidden throughout the year and revealed only on Olojo. The Ooni's public appearance in the crown is one of the most anticipated moments in Yoruba ceremonial life.",events:[{day:1,title:'Ifa consultation',desc:'The Ooni consults Ifa. The town observes silence and fasting.'},{day:2,title:'Ogun Day',desc:'Devotees of Ogun gather. Iron implements venerated. Restricted inner palace ceremonies.'},{day:3,title:'The Aare Crown',desc:'The Ooni emerges wearing the Aare crown. Thousands line the streets. Oriki chanted by royal praise singers.'}],oriki_links:['Oriki Ile-Ife','Oriki Ooni','Oriki Ogun'],sources:['Pemberton & Abiodun, Yoruba Sacred Kingship (Smithsonian, 1996)'],travel:{nearest_city:'Ibadan (90km), Osogbo (60km)',transport:'Drive from Ibadan or Osogbo.',accommodation:'Ibadan is the best base — 90-minute drive to Ile-Ife.',from_diaspora:'Fly into Lagos (200km) or Abuja.',dress_code:'Traditional Yoruba attire strongly preferred. Aso-oke for the procession day.',photography:'Street photography welcome. Palace inner ceremonies are restricted.',visitor_programme:"Contact the Ooni's Palace protocol office in advance.",budget:'From UK: £700-1,000.'},citable:true,verified:true},
+  {id:'sango',name:'Sango Festival',yoruba_name:'Odun Sango',category:'Deity',tags:['Deity','Royal'],banner:'linear-gradient(135deg,#1C1A4D,#3D2F8A)',month:'August',month_num:8,duration:7,date_note:'Seven days in August — date set by the Alaafin of Oyo',town:'Oyo',state:'Oyo State',site:"Alaafin's Palace, Oyo town",deity:'Sango (deity of thunder)',unesco:false,significance:'Sango Festival honours the third Alaafin of Oyo who became the deity of thunder. Features fire, drumming, possession ceremonies, and chanting of Sango Oriki. Central to Yoruba identity globally through its influence on Candomble and Lucimi.',history:'Sango was a historical king of the Oyo Empire who became deified. His worship spread globally through the slave trade. In Brazil he is known as Xango; in Cuba as Chango.',events:[{day:1,title:'Igbale — Opening ceremony',desc:'Priests enter the Sango shrine. Koso is visited.'},{day:3,title:'Ayan — Drum festival',desc:'Dundun drummers perform. Oriki Sango chanted continuously. Possession ceremonies begin.'},{day:5,title:'Fire walking',desc:'Initiated devotees demonstrate spiritual protection through fire.'},{day:7,title:'Grand finale at the palace',desc:'The Alaafin presides. Oriki of the Alaafin and Sango chanted by royal praise singers.'}],oriki_links:['Oriki Sango','Oriki Oyo Kingdom'],sources:['Law, The Oyo Empire (Oxford, 1977)'],travel:{nearest_city:'Ibadan (80km), Lagos (200km)',transport:'Bus or drive from Ibadan.',accommodation:'Hotels in Ibadan are the best base.',from_diaspora:'Fly into Lagos. Highly recommended for diaspora from Brazil and Cuba.',dress_code:'Red and white — the colours of Sango.',photography:'Welcome in public areas. Ask before photographing possession ceremonies.',visitor_programme:'Oyo State Tourism Board can facilitate visits.',budget:'From UK: £700-1,000.'},citable:true,verified:true},
+  {id:'ojude-oba',name:'Ojude Oba',yoruba_name:'Ojude Oba',category:'Royal',tags:['Royal','Heritage'],banner:'linear-gradient(135deg,#0A2D4D,#1A6B9A)',month:'July',month_num:7,duration:3,date_note:'Three days after Eid al-Adha — date varies annually with the Islamic calendar',town:'Ijebu-Ode',state:'Ogun State',site:"Awujale's Palace, Ijebu-Ode",deity:null,unesco:false,significance:'A spectacular royal homage ceremony where age-grades parade before the Awujale of Ijebuland in elaborate traditional costumes on horseback. One of the most visually stunning festivals in Nigeria.',history:'Began in the 19th century as a way for Ijebu Muslims to pay homage to the Awujale after Eid prayers. Evolved into the grandest display of Ijebu cultural identity.',events:[{day:1,title:'Eid prayers and opening',desc:'Community Eid prayers. Beginning of festivities.'},{day:2,title:'Age-grade parades',desc:'Each age-grade arrives at the palace in coordinated costume, on horseback, with their own drummers.'},{day:3,title:'Royal homage',desc:'The Awujale receives homage from all groups. Grand finale celebration.'}],oriki_links:['Oriki Awujale','Oriki Ijebu'],sources:['Aderibigbe, A History of Ijebu (Heinemann, 1992)'],travel:{nearest_city:'Lagos (90km)',transport:'Direct road from Lagos — 90 minutes.',accommodation:'Hotels in Ijebu-Ode or Lagos.',from_diaspora:'Fly into Lagos. Easiest major Yoruba festival to attend from Lagos.',dress_code:'Elaborate traditional Yoruba attire is the norm.',photography:'Excellent photography opportunities. The horse parade is spectacular.',visitor_programme:'Contact Ogun State Tourism Board.',budget:'From UK: £600-900. Can be done as a day trip from Lagos.'},citable:true,verified:true},
+  {id:'egungun',name:'Egungun Festival',yoruba_name:'Odun Egungun',category:'Ancestral',tags:['Ancestral','Deity'],banner:'linear-gradient(135deg,#2D3A1A,#5A7A2A)',month:'June',month_num:6,duration:7,date_note:'Varies by town — major celebrations in Oyo, Abeokuta, and Ibadan (June-July)',town:'Multiple towns',state:'Oyo, Ogun States',site:'Town centres and family compounds',deity:'Egungun (the ancestors)',unesco:false,significance:'The Yoruba masquerade tradition through which the ancestors return to the living world. The chanting of family Oriki during Egungun ceremonies is among the most direct connections between praise poetry and living heritage.',history:'Among the oldest continuous religious practices in Yorubaland. The tradition was transplanted to Brazil, Cuba, and Trinidad through the slave trade.',events:[{day:1,title:'Emergence from the grove',desc:'Egungun masquerades emerge from the sacred grove. Townspeople line the streets.'},{day:3,title:'Family visits',desc:'Egungun visit family compounds, delivering blessings from the ancestors. Family Oriki are chanted.'},{day:7,title:'Return to the grove',desc:'Final ceremony. The ancestors return. Prayers for the year ahead.'}],oriki_links:['Family Oriki (multiple)','Oriki Egungun'],sources:['Drewal & Mason, Beads Body and Soul (UCLA, 1998)','Babatunde Lawal, The Gelede Spectacle (University of Washington, 1996)'],travel:{nearest_city:'Varies by town',transport:'Abeokuta is 80km from Lagos. Oyo is 120km via Ibadan.',accommodation:'Lagos is the best base for Ogun State celebrations.',from_diaspora:'For diaspora with specific family connections, attending Egungun in your ancestral town is the most profound experience this archive can facilitate.',dress_code:'Traditional Yoruba attire. Do not touch the masquerade.',photography:'Always ask the Egungun society before photographing. Rules vary strictly by community.',visitor_programme:'Best experienced through a local family connection.',budget:'From UK: £600-800.'},citable:true,verified:true},
+  {id:'odun-ifa',name:'Odun Ifa',yoruba_name:'Odun Ifa',category:'Deity',tags:['Deity','Heritage','Diaspora'],banner:'linear-gradient(135deg,#4A3A00,#8B6914)',month:'June',month_num:6,duration:4,date_note:'June annually in Ile-Ife — UNESCO inscription 2005',town:'Ile-Ife',state:'Osun State',site:'Ile-Ife (city-wide)',deity:'Ifa / Orunmila',unesco:true,significance:'Odun Ifa celebrates the Yoruba oracle and body of wisdom inscribed by UNESCO as Intangible Cultural Heritage. Draws Ifa priests from across Nigeria and from diaspora communities in Cuba, Brazil, and the United States.',history:'The Ifa corpus of 256 Odu contains thousands of poems, proverbs, myths, and medical knowledge. UNESCO inscribed Ifa divination in 2005. The festival in Ile-Ife is the spiritual centre of global Ifa practice.',events:[{day:1,title:'Opening divination',desc:'Senior Babalawo perform Ifa consultation for the year.'},{day:2,title:'Diaspora reunion',desc:'Ifa practitioners from Cuba, Brazil, and the US gather. Ceremonies reconnecting the diaspora to Ile-Ife.'},{day:3,title:'Public ceremonies',desc:'Open Ifa chanting, teaching sessions, and cultural display.'},{day:4,title:'Grand thanksgiving',desc:'Prayers and thanksgiving at the Orunmila shrine.'}],oriki_links:['Oriki Orunmila','Oriki Ile-Ife'],sources:['UNESCO — ich.unesco.org/en/RL/ifa-divination-system-00146','Abimbola, Ifa: An Exposition of Ifa Literary Corpus (Oxford, 1976)'],travel:{nearest_city:'Ibadan (90km), Lagos (200km)',transport:'Drive from Ibadan or Lagos.',accommodation:'Ibadan is the best base.',from_diaspora:'The single most important pilgrimage for diaspora Ifa practitioners. Contact the International Institute of Ifa in Ile-Ife.',dress_code:'White attire preferred.',photography:'Public ceremonies welcome. Private divination sessions are not photographed.',visitor_programme:'The International Institute of Ifa (IIF) runs a diaspora programme.',budget:'From UK: £750-1,100. From US: $900-1,300.'},citable:true,verified:true}
+];
+
+let festFilter='',festSearch2='';
+
+function renderUpcoming(){
+  const now=new Date();const nm=now.getMonth()+1;
+  const sorted=[...FESTIVALS].sort((a,b)=>{
+    const am=a.month_num>=nm?a.month_num:a.month_num+12;
+    const bm=b.month_num>=nm?b.month_num:b.month_num+12;
+    return am-bm;
+  });
+  document.getElementById('upcoming-row').innerHTML=sorted.map(f=>`<div class="uc" onclick="openFest('${f.id}')"><div class="uc-name">${esc(f.name.split(' ').slice(0,2).join(' '))}</div><div class="uc-month">${esc(f.month)}</div></div>`).join('');
+}
+
+function renderFests(){
+  let data=FESTIVALS;
+  if(festFilter)data=data.filter(f=>f.tags.includes(festFilter));
+  const s=(festSearch||'').toLowerCase();
+  if(s)data=data.filter(f=>f.name.toLowerCase().includes(s)||f.town.toLowerCase().includes(s)||f.significance.toLowerCase().includes(s)||f.month.toLowerCase().includes(s)||(f.deity&&f.deity.toLowerCase().includes(s)));
+  const list=document.getElementById('fest-list');
+  if(!data.length){list.innerHTML='<div class="state-msg">No festivals found.</div>';return;}
+  list.innerHTML=data.map(f=>{
+    const tags=f.tags.map(t=>`<span class="ft ft-${t.toLowerCase()}">${esc(t)}</span>`).join('');
+    return `<div class="fest-card" onclick="openFest('${f.id}')">
+      <div class="fest-banner" style="background:${f.banner};"></div>
+      <div class="fest-body">
+        <div class="fest-top">
+          <div class="fest-name">${esc(f.name)}${f.unesco?' <span class="unesco-pill">UNESCO</span>':''}</div>
+          <div class="fest-date-pill">${esc(f.month)}</div>
+        </div>
+        <div class="fest-loc">📍 ${esc(f.town)} · ${esc(f.state)}</div>
+        <div class="fest-tags">${tags}</div>
+        <div class="fest-sig">${esc(f.significance.slice(0,160))}…</div>
+        <div class="fest-footer">
+          <button class="attend-btn" data-tip="See transport, accommodation and travel planning for this festival" onclick="event.stopPropagation();openFest('${f.id}',true)">Plan attendance →</button>
+          ${f.oriki_links&&f.oriki_links.length?`<button class="oriki-link-btn" onclick="event.stopPropagation();searchOriki('${esc(f.oriki_links[0])}')">Related Oriki</button>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openFest(id,scrollTravel){
+  const f=FESTIVALS.find(x=>x.id===id);if(!f)return;
+  showTab('fest-detail');
+  const tags=f.tags.map(t=>`<span class="ft ft-${t.toLowerCase()}">${esc(t)}</span>`).join('');
+  const timeline=f.events.map(ev=>`<div class="t-day"><div class="t-day-num">${ev.day}</div><div><div class="t-day-title">${esc(ev.title)}</div><div class="t-day-desc">${esc(ev.desc)}</div></div></div>`).join('');
+  const t=f.travel;
+  const travel=`<div class="travel-list">
+    <div class="tl-item"><span class="tl-icon">✈️</span><div><strong>From diaspora:</strong> ${esc(t.from_diaspora)}</div></div>
+    <div class="tl-item"><span class="tl-icon">📍</span><div><strong>Nearest city:</strong> ${esc(t.nearest_city)}</div></div>
+    <div class="tl-item"><span class="tl-icon">🚌</span><div><strong>Transport:</strong> ${esc(t.transport)}</div></div>
+    <div class="tl-item"><span class="tl-icon">🏨</span><div><strong>Accommodation:</strong> ${esc(t.accommodation)}</div></div>
+    <div class="tl-item"><span class="tl-icon">👗</span><div><strong>Dress code:</strong> ${esc(t.dress_code)}</div></div>
+    <div class="tl-item"><span class="tl-icon">📷</span><div><strong>Photography:</strong> ${esc(t.photography)}</div></div>
+    ${t.visitor_programme?`<div class="tl-item"><span class="tl-icon">🤝</span><div><strong>Visitor programme:</strong> ${esc(t.visitor_programme)}</div></div>`:''}
+    <div class="tl-item"><span class="tl-icon">💰</span><div><strong>Budget:</strong> ${esc(t.budget)}</div></div>
+  </div>`;
+  const sources=f.sources.map(s=>`<div>• ${esc(s)}</div>`).join('');
+  const orikiLinks=f.oriki_links?f.oriki_links.map(o=>`<button class="oriki-link-btn" style="display:block;margin-bottom:4px;text-align:left;" onclick="searchOriki('${esc(o)}')">${esc(o)} →</button>`).join(''):'';
+  document.getElementById('fest-detail-content').innerHTML=`
+    <div class="fd-banner" style="background:${f.banner};"><div class="fd-title">${esc(f.name)}</div></div>
+    <div class="fd-section">
+      <div class="fd-section-title">At a glance</div>
+      <div class="fd-grid">
+        <div class="fd-cell"><div class="fd-cell-label">Month</div><div class="fd-cell-value">${esc(f.month)}</div></div>
+        <div class="fd-cell"><div class="fd-cell-label">Duration</div><div class="fd-cell-value">${f.duration} days</div></div>
+        <div class="fd-cell"><div class="fd-cell-label">Town</div><div class="fd-cell-value">${esc(f.town)}</div></div>
+        <div class="fd-cell"><div class="fd-cell-label">State</div><div class="fd-cell-value">${esc(f.state)}</div></div>
+        ${f.deity?`<div class="fd-cell"><div class="fd-cell-label">Deity</div><div class="fd-cell-value">${esc(f.deity)}</div></div>`:''}
+        <div class="fd-cell"><div class="fd-cell-label">Type</div><div class="fd-cell-value">${esc(f.category)}</div></div>
+      </div>
+      <div style="margin-top:8px;font-size:12px;color:var(--amber);">📅 ${esc(f.date_note)}</div>
+    </div>
+    <div class="fd-section"><div class="fd-section-title">Significance</div><div class="fd-text">${esc(f.significance)}</div></div>
+    <div class="fd-section"><div class="fd-section-title">History</div><div class="fd-text">${esc(f.history)}</div></div>
+    <div class="fd-section"><div class="fd-section-title">Programme</div><div class="timeline">${timeline}</div></div>
+    <div class="fd-section" id="travel-section"><div class="fd-section-title">✈️ Attendance planning</div>${travel}<button class="plan-btn" data-tip="Generate a personalised trip plan from your departure city — coming soon" onclick="alert('Full trip planning — coming soon. Will generate a personalised itinerary from your departure city.')">Generate my trip plan →</button></div>
+    ${orikiLinks?`<div class="fd-section"><div class="fd-section-title">Related Oriki in the archive</div>${orikiLinks}</div>`:''}
+    <div class="fd-section" style="background:var(--blue-bg);"><div class="fd-section-title" style="color:var(--blue);">Citable sources</div><div class="cite-box">${sources}</div>${f.unesco?'<div style="margin-top:8px;"><span class="unesco-pill">UNESCO Intangible Cultural Heritage</span></div>':''}</div>
+    <div class="fd-section"><div class="fd-section-title">Trust status</div><div class="fd-text">${f.verified?'⭐ Verified Corpus — reviewed against academic and primary sources. Citable.':'Community submission — pending verification.'}</div></div>
+  `;
+  if(scrollTravel)setTimeout(()=>document.getElementById('travel-section')?.scrollIntoView({behavior:'smooth',block:'start'}),200);
+}
+
+function searchOriki(name){
+  orikiSearch=name;
+  document.getElementById('oriki-search').value=name;
+  showTab('oriki');loadOriki();
+}
+
+document.getElementById('fest-back').addEventListener('click',()=>showTab('festivals'));
+document.querySelectorAll('#fest-filters .pill').forEach(p=>{
+  p.addEventListener('click',function(){
+    document.querySelectorAll('#fest-filters .pill').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');festFilter=this.dataset.fcat;renderFests();
+  });
+});
+document.getElementById('fest-search-btn').addEventListener('click',()=>{festSearch=document.getElementById('fest-search').value;renderFests();});
+document.getElementById('fest-search').addEventListener('keydown',e=>{if(e.key==='Enter'){festSearch=e.target.value;renderFests();}});
+
+// ── Learn ──────────────────────────────────────────────────────
+// Audio URL store — loaded from learn_audio table in Supabase
+// Admin uploads audio files to Storage and inserts rows into learn_audio table
+// Keys match: alphabet letters ('A','B',...), numbers ('num-0','num-1',...),
+// tones ('tone-high','tone-mid','tone-low'), specials ('special-e', etc.),
+// greetings ('greet-morning', etc.)
+const learnAudio = {};
+
+async function loadLearnAudio() {
+  try {
+    const { data, error } = await db.from('learn_audio')
+      .select('audio_key, audio_url')
+      .eq('verified', true);
+    if (error || !data) return;
+    data.forEach(row => { learnAudio[row.audio_key] = row.audio_url; });
+    // Refresh any already-rendered audio buttons
+    document.querySelectorAll('.alpha-audio-btn,.num-audio-btn,.tone-audio-btn').forEach(btn => {
+      const onclick = btn.getAttribute('onclick') || '';
+      const start = onclick.indexOf("'") + 1;
+      const end = onclick.indexOf("'", start);
+      const key = start > 0 && end > start ? onclick.slice(start, end) : null;
+      if (key && learnAudio[key]) btn.classList.add('has-audio');
+    });
+  } catch(e) { console.warn('Learn audio load:', e.message); }
+}
+
+let currentLearnAudio = null;
+
+function playLearnAudio(key, btn) {
+  const url = learnAudio[key];
+  // Stop current if playing
+  if (currentLearnAudio) {
+    currentLearnAudio.audio.pause();
+    if (currentLearnAudio.btn) currentLearnAudio.btn.classList.remove('playing');
+  }
+  if (!url) {
+    // No audio yet — show message
+    showFeedback('No pronunciation recording yet for this item. Approved contributors can upload one.', 'ok');
+    return;
+  }
+  const audio = new Audio(url);
+  btn.classList.add('playing');
+  currentLearnAudio = { audio, btn };
+  audio.play();
+  audio.onended = () => { btn.classList.remove('playing'); currentLearnAudio = null; };
+}
+
+function audioBtn(key, hasTip) {
+  const hasAudio = !!learnAudio[key];
+  const tip = hasTip || (hasAudio ? 'Play pronunciation' : 'No recording yet — click to request');
+  return `<button class="alpha-audio-btn ${hasAudio ? 'has-audio' : ''}" data-tip="${tip}" onclick="playLearnAudio('${key}',this)">🔊</button>`;
+}
+
+(function(){
+  // ── Alphabet ──
+  const alpha = [
+    {l:'A', name:'A'},  {l:'B', name:'B'},  {l:'D', name:'D'},
+    {l:'E', name:'E'},  {l:'Ẹ', name:'Ẹ — open E'}, {l:'F', name:'F'},
+    {l:'G', name:'G'},  {l:'GB', name:'GB'}, {l:'H', name:'H'},
+    {l:'I', name:'I'},  {l:'J', name:'J'},  {l:'K', name:'K'},
+    {l:'L', name:'L'},  {l:'M', name:'M'},  {l:'N', name:'N'},
+    {l:'O', name:'O'},  {l:'Ọ', name:'Ọ — open O'}, {l:'P', name:'P'},
+    {l:'R', name:'R'},  {l:'S', name:'S'},  {l:'Ṣ', name:'Ṣ — SH'},
+    {l:'T', name:'T'},  {l:'U', name:'U'},  {l:'W', name:'W'},
+    {l:'Y', name:'Y'}
+  ];
+  document.getElementById('alpha-grid').innerHTML = alpha.map(a =>
+    `<div class="alpha-cell">
+      <div class="alpha-letter">${a.l}</div>
+      <div class="alpha-name">${a.name}</div>
+      ${audioBtn(a.l, 'Hear how to pronounce ' + a.l)}
+    </div>`
+  ).join('');
+
+  // ── Tone marks ──
+  const tones = [
+    { mark: 'á', label: 'High tone', example: 'ará — body / àrá — thunder', key: 'tone-high' },
+    { mark: 'a', label: 'Mid tone', example: 'a neutral, relaxed pitch', key: 'tone-mid' },
+    { mark: 'à', label: 'Low tone', example: 'àgbàdo — corn / àgbà — elder', key: 'tone-low' },
+  ];
+  document.getElementById('tone-grid').innerHTML = tones.map(t =>
+    `<div class="tone-row">
+      <div class="tone-info">
+        <span class="tone-mark">${t.mark}</span>
+        <span class="tone-label">${t.label}</span>
+        <div class="tone-example">${t.example}</div>
+      </div>
+      <button class="tone-audio-btn ${learnAudio[t.key]?'has-audio':''}" data-tip="Hear example" onclick="playLearnAudio('${t.key}',this)">🔊</button>
+    </div>`
+  ).join('');
+
+  // ── Special letters ──
+  const specials = [
+    { mark: 'Ẹ / ẹ', label: 'Open E', example: 'Like the E in "bed" — ẹja (fish)', key: 'special-e' },
+    { mark: 'Ọ / ọ', label: 'Open O', example: 'Like the O in "off" — ọmọ (child)', key: 'special-o' },
+    { mark: 'Ṣ / ṣ', label: 'SH sound', example: 'Like SH in "shoe" — ṣe (do/make)', key: 'special-s' },
+    { mark: 'GB / gb', label: 'GB sound', example: 'A combined stop — gbogbo (all/every)', key: 'special-gb' },
+  ];
+  document.getElementById('special-grid').innerHTML = specials.map(s =>
+    `<div class="tone-row">
+      <div class="tone-info">
+        <span class="tone-mark" style="font-size:16px;">${s.mark}</span>
+        <span class="tone-label">${s.label}</span>
+        <div class="tone-example">${s.example}</div>
+      </div>
+      <button class="tone-audio-btn ${learnAudio[s.key]?'has-audio':''}" data-tip="Hear pronunciation" onclick="playLearnAudio('${s.key}',this)">🔊</button>
+    </div>`
+  ).join('');
+
+  // ── Numbers ──
+  const nums = [
+    ['0','òdo','zero'],['1','ọ̀kan','one'],['2','èjì','two'],
+    ['3','ẹ̀ta','three'],['4','ẹ̀rin','four'],['5','àrún','five'],
+    ['6','ẹ̀fà','six'],['7','èje','seven'],['8','ẹ̀jọ','eight'],
+    ['9','ẹ̀sán','nine'],['10','ẹ̀wá','ten'],['20','ogún','twenty'],
+    ['30','ọgbọ̀n','thirty'],['40','ogójì','forty'],
+    ['50','àádọ́ta','fifty'],['100','ọgọ́rùn','one hundred']
+  ];
+  document.getElementById('num-grid').innerHTML = nums.map(n =>
+    `<div class="num-cell">
+      <div class="num-left">
+        <span class="num-digit">${n[0]}</span>
+        <span class="num-word">${n[1]}</span>
+      </div>
+      <button class="num-audio-btn ${learnAudio['num-'+n[0]]?'has-audio':''}" data-tip="Hear ${n[2]}" onclick="playLearnAudio('num-${n[0]}',this)">🔊</button>
+    </div>`
+  ).join('');
+
+  // ── Basic greetings ──
+  const greetings = [
+    { yoruba: 'Ẹ káàárọ̀', english: 'Good morning', key: 'greet-morning' },
+    { yoruba: 'Ẹ káàsán', english: 'Good afternoon', key: 'greet-afternoon' },
+    { yoruba: 'Ẹ kúrọlẹ', english: 'Good evening', key: 'greet-evening' },
+    { yoruba: 'Báwo ni?', english: 'How are you?', key: 'greet-how' },
+    { yoruba: 'Mo wà dáadáa', english: 'I am fine', key: 'greet-fine' },
+    { yoruba: 'Ẹ jọ̀ọ́', english: 'Please', key: 'greet-please' },
+    { yoruba: 'Ẹ ṣéun', english: 'Thank you', key: 'greet-thanks' },
+    { yoruba: 'Ó dàbọ̀', english: 'Goodbye', key: 'greet-bye' },
+  ];
+  document.getElementById('greetings-grid').innerHTML = greetings.map(g =>
+    `<div class="tone-row">
+      <div class="tone-info">
+        <span class="tone-mark" style="font-size:14px;font-style:italic;">${g.yoruba}</span>
+        <span class="tone-label" style="font-size:12px;">${g.english}</span>
+      </div>
+      <button class="tone-audio-btn ${learnAudio[g.key]?'has-audio':''}" data-tip="Hear pronunciation" onclick="playLearnAudio('${g.key}',this)">🔊</button>
+    </div>`
+  ).join('');
+})();
+
+// ── Load Dictionary ───────────────────────────────────────────
+let dictSearch='', dictPos='';
+async function loadDictionary(){
+  const list=document.getElementById('dict-list');
+  if(!list)return;
+  list.innerHTML='<div class="state-msg">Loading dictionary…</div>';
+  try{
+    let q=db.from('yoruba_dictionary').select('*').order('word',{ascending:true});
+    if(dictSearch.trim())q=q.or(`word.ilike.%${dictSearch}%,meaning.ilike.%${dictSearch}%`);
+    if(dictPos)q=q.eq('part_of_speech',dictPos);
+    const{data,error}=await q;
+    if(error){list.innerHTML=`<div class="err">${esc(error.message)}</div>`;return;}
+    if(!data||!data.length){
+      list.innerHTML='<div class="state-msg">No words yet.<br/><button class="subtle-link" data-tab="submit" style="margin-top:8px;">Add the first word →</button></div>';
+      list.querySelector('[data-tab]')?.addEventListener('click',function(){showTab(this.dataset.tab);});
+      return;
+    }
+    // Update stats
+    const dictEl=document.getElementById('stat-dict');
+    if(dictEl)dictEl.textContent=data.length.toLocaleString();
+    const posSet=new Set(data.map(r=>r.part_of_speech).filter(Boolean));
+    const posEl=document.getElementById('stat-dict-pos');
+    if(posEl)posEl.textContent=posSet.size;
+    const verEl=document.getElementById('stat-dict-verified');
+    if(verEl)verEl.textContent=data.filter(r=>r.verified).length;
+    list.innerHTML=data.map(e=>{
+      const ia=localInteractions[e.id]||{};
+      return `<div class="entry-card">
+        <div class="ec-top">
+          <div class="ec-name" style="font-size:17px;font-weight:700;">${esc(e.word||'')}</div>
+          ${e.part_of_speech?`<div class="type-badge t-default">${esc(e.part_of_speech)}</div>`:''}
+        </div>
+        ${e.tone_marks?`<div class="ec-meta" style="font-size:12px;color:var(--amber);">Tones: ${esc(e.tone_marks)}</div>`:''}
+        <div style="font-size:14px;color:var(--ink);margin-bottom:6px;">${esc(e.meaning||'')}</div>
+        ${e.example_usage?`<div class="ec-snippet">${esc(e.example_usage)}</div>`:''}
+        ${e.dialect||e.region?`<div class="ec-meta">${[e.dialect,e.region].filter(Boolean).map(esc).join(' · ')}</div>`:''}
+        <div class="trust-row">${e.verified?'<span class="tbadge tb-verified">⭐ Verified</span>':e.status==='nominated'?'<span class="tbadge tb-nominated">⬆ Nominated</span>':'<span class="tbadge tb-community">Community</span>'}</div>
+        <div class="ibar">
+          <button class="ib${ia.endorsed?' on-endorse':''}" onclick="endorse('${e.id}',this)">👍 <span>${(e.endorsements||0)+(ia.endorsed?1:0)}</span></button>
+          <button class="ib${ia.disputed?' on-dispute':''}" onclick="flagDispute('${e.id}',this)">⚑</button>
+          ${!e.verified?`<button class="ib${ia.nominated?' on-nominate':''}" onclick="nominateEntry('${e.id}','yoruba_dictionary',this)">⬆</button>`:''}
+          <div class="ib-spacer"></div>
+          ${e.contributor_name?`<span style="font-size:11px;color:var(--ink3);">${esc(e.contributor_name)}</span>`:''}
+        </div>
+      </div>`;
+    }).join('');
+  }catch(err){list.innerHTML=`<div class="err">${esc(err.message)}</div>`;}
+}
+
+document.getElementById('dict-search-btn')?.addEventListener('click',()=>{dictSearch=document.getElementById('dict-search').value;loadDictionary();});
+document.getElementById('dict-search')?.addEventListener('keydown',e=>{if(e.key==='Enter'){dictSearch=e.target.value;loadDictionary();}});
+document.querySelectorAll('#dict-filters .pill').forEach(p=>{
+  p.addEventListener('click',function(){
+    document.querySelectorAll('#dict-filters .pill').forEach(x=>x.classList.remove('active'));
+    this.classList.add('active');dictPos=this.dataset.pos;loadDictionary();
+  });
+});
+
+// ── Audio upload handler ──────────────────────────────────────
+function handleAudioSelect(inputId, labelId){
+  const file=document.getElementById(inputId)?.files[0];
+  const label=document.getElementById(labelId);
+  if(file&&label){
+    label.textContent='✓ '+file.name+' ('+Math.round(file.size/1024)+'KB)';
+    label.style.display='block';
+  }
+}
+
+async function uploadAudio(fileInputId, entryId){
+  const input=document.getElementById(fileInputId);
+  if(!input||!input.files||!input.files[0])return null;
+  const file=input.files[0];
+  const ext=file.name.split('.').pop();
+  const path=`oriki-audio/${entryId}.${ext}`;
+  const{data,error}=await db.storage.from('oriki-audio').upload(path,file,{upsert:true});
+  if(error){console.warn('Audio upload error:',error.message);return null;}
+  const{data:urlData}=db.storage.from('oriki-audio').getPublicUrl(path);
+  return urlData?.publicUrl||null;
+}
+
+// ── Render audio player ────────────────────────────────────────
+function renderAudioPlayer(url, label){
+  if(!url)return '<div class="no-audio">No audio recording for this entry.</div>';
+  const bars=Array.from({length:30},(_,i)=>{
+    const h=8+Math.floor(Math.random()*18);
+    return `<div class="wb" style="height:${h}px;"></div>`;
+  }).join('');
+  return `<div class="audio-player-wrap">
+    <audio id="audio-el-${Math.random().toString(36).substr(2,6)}" src="${url}" style="display:none;"></audio>
+    <button class="play-pause-btn" data-tip="Play audio recording" onclick="toggleAudio(this)">
+      <svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg>
+    </button>
+    <div class="waveform-bars">${bars}</div>
+    <span class="audio-dur">${label||'Audio'}</span>
+  </div>`;
+}
+
+function toggleAudio(btn){
+  const wrap=btn.closest('.audio-player-wrap');
+  const audio=wrap.querySelector('audio');
+  if(!audio)return;
+  if(audio.paused){
+    audio.play();
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="white"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+    btn.setAttribute('data-tip','Pause');
+    // Animate waveform
+    const bars=wrap.querySelectorAll('.wb');
+    let frame=0;
+    btn._anim=setInterval(()=>{
+      bars.forEach((b,i)=>{
+        const pct=audio.currentTime/audio.duration;
+        b.classList.toggle('played',i<Math.floor(pct*bars.length));
+      });
+      frame++;
+    },100);
+    audio.onended=()=>{
+      clearInterval(btn._anim);
+      btn.innerHTML='<svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>';
+      btn.setAttribute('data-tip','Play audio recording');
+      bars.forEach(b=>b.classList.remove('played'));
+    };
+  }else{
+    audio.pause();
+    clearInterval(btn._anim);
+    btn.innerHTML='<svg viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>';
+    btn.setAttribute('data-tip','Play audio recording');
+  }
+}
+
+// ── Citation export ────────────────────────────────────────────
+function renderCitation(e){
+  const year=e.created_at?new Date(e.created_at).getFullYear():'n.d.';
+  const contrib=e.contributor_name||'Anonymous contributor';
+  const loc=[e.town,e.state].filter(Boolean).join(', ')||'Nigeria';
+  const formats={
+    Chicago:`${contrib}. "${esc(e.name)}." Oriki Archive, ${loc}, ${year}. https://orikiarchive.org/entry/${e.id}`,
+    APA:`${contrib} (${year}). ${esc(e.name)} [Oriki entry]. Oriki Archive. https://orikiarchive.org/entry/${e.id}`,
+    BibTeX:`@misc{oriki${e.id.substr(0,8)},\n  author={${contrib}},\n  title={${esc(e.name)}},\n  year={${year}},\n  howpublished={Oriki Archive},\n  url={https://orikiarchive.org/entry/${e.id}}\n}`
+  };
+  return `<div class="cite-popup" id="cite-popup-${e.id}">
+    <div class="cite-format-tabs">
+      <button class="cf-tab active" onclick="switchCiteFormat('${e.id}','Chicago',this)">Chicago</button>
+      <button class="cf-tab" onclick="switchCiteFormat('${e.id}','APA',this)">APA</button>
+      <button class="cf-tab" onclick="switchCiteFormat('${e.id}','BibTeX',this)">BibTeX</button>
+    </div>
+    <div class="cite-text" id="cite-text-${e.id}">${esc(formats.Chicago)}</div>
+    <button class="copy-cite-btn" onclick="copyCitation('${e.id}')">Copy citation</button>
+  </div>`;
+}
+
+const citeFormats={};
+function switchCiteFormat(entryId,fmt,btn){
+  document.querySelectorAll(`#cite-popup-${entryId} .cf-tab`).forEach(t=>t.classList.remove('active'));
+  btn.classList.add('active');
+  citeFormats[entryId]=fmt;
+  // Re-render — simplified: just show format name for now
+  const textEl=document.getElementById('cite-text-'+entryId);
+  if(textEl)textEl.setAttribute('data-fmt',fmt);
+}
+
+function copyCitation(entryId){
+  const textEl=document.getElementById('cite-text-'+entryId);
+  if(!textEl)return;
+  navigator.clipboard.writeText(textEl.textContent).then(()=>{
+    const btn=textEl.nextElementSibling;
+    if(btn){btn.textContent='Copied!';setTimeout(()=>{btn.textContent='Copy citation';},2000);}
+  }).catch(()=>{
+    // Fallback
+    const range=document.createRange();
+    range.selectNodeContents(textEl);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+  });
+}
+
+// ── Load dictionary ────────────────────────────────────────────
+// Dictionary access state
+let dictAccessUnlocked=false;
+
+function enterDictAccessCode(){
+  const row=document.getElementById('dict-code-row');
+  if(row)row.style.display=row.style.display==='none'?'block':'none';
+}
+
+// Access codes — in production these would be checked server-side
+// For now a simple client-side check; real security comes from Supabase RLS
+const DICT_READ_CODES=['ORIKI-RESEARCH-2026','ORIKI-PREMIUM-2026'];
+const WORD_SUBMIT_CODES=['ORIKI-LEXICOGRAPHER-01','ORIKI-LEXICOGRAPHER-02','ORIKI-LEXICOGRAPHER-03'];
+
+function verifyDictCode(){
+  const code=document.getElementById('dict-access-code')?.value.trim().toUpperCase();
+  const errEl=document.getElementById('dict-code-err');
+  if(DICT_READ_CODES.includes(code)||WORD_SUBMIT_CODES.includes(code)){
+    dictAccessUnlocked=true;
+    const banner=document.getElementById('dict-gate-banner');
+    if(banner){
+      banner.innerHTML='<div style="font-size:13px;color:#9FE1CB;">✓ Access granted. Full dictionary unlocked.</div>';
+      setTimeout(()=>{banner.style.display='none';},2000);
+    }
+    loadDictionary();
+    if(errEl)errEl.style.display='none';
+  }else{
+    if(errEl)errEl.style.display='block';
+  }
+}
+
+function verifyWordCode(){
+  const code=document.getElementById('word-access-code')?.value.trim().toUpperCase();
+  const errEl=document.getElementById('word-code-err');
+  if(WORD_SUBMIT_CODES.includes(code)){
+    const gate=document.getElementById('word-submit-gate');
+    const form=document.getElementById('form-word');
+    const stored=document.getElementById('wd-access-code-stored');
+    if(gate)gate.style.display='none';
+    if(form)form.style.display='block';
+    if(stored)stored.value=code;
+    if(errEl)errEl.style.display='none';
+  }else{
+    if(errEl)errEl.style.display='block';
+  }
+}
+
+async function loadDictionary(){
+  const list=document.getElementById('dict-list');
+  if(!list)return;
+  list.innerHTML='<div class="state-msg">Loading dictionary…</div>';
+  try{
+    // Only fetch word + meaning for free users, full data for unlocked
+    const fields=dictAccessUnlocked
+      ?'*'
+      :'id,word,meaning,part_of_speech,verified';
+    let q=db.from('yoruba_dictionary').select(fields).order('word',{ascending:true});
+    if(dictSearch.trim())q=q.or(`word.ilike.%${dictSearch}%,meaning.ilike.%${dictSearch}%`);
+    const{data,error}=await q;
+    if(error){list.innerHTML=`<div class="err">${esc(error.message)}</div>`;return;}
+    if(!data||!data.length){
+      list.innerHTML='<div class="state-msg">No words yet.</div>';
+      return;
+    }
+    if(dictAccessUnlocked){
+      // Full view
+      list.innerHTML=data.map(e=>`<div class="dict-card">
+        <div class="dict-word">${esc(e.word||'')}${e.tone_marks?` <span style="font-size:12px;color:var(--ink3);font-style:normal;">(${esc(e.tone_marks)})</span>`:''}</div>
+        ${e.part_of_speech?`<div class="dict-pos">${esc(e.part_of_speech)}</div>`:''}
+        <div class="dict-meaning">${esc(e.meaning||'')}</div>
+        ${e.example_usage?`<div class="dict-example">${esc(e.example_usage)}</div>`:''}
+        ${e.audio_url?renderAudioPlayer(e.audio_url,'Pronunciation'):''}
+        <div class="dict-meta">${[e.region,e.dialect,e.contributor_name?'By '+e.contributor_name:''].filter(Boolean).join(' · ')}
+          ${e.verified?'<span class="tbadge tb-verified" style="margin-left:4px;">⭐ Verified</span>':''}
+        </div>
+      </div>`).join('');
+    }else{
+      // Free view — word and meaning only
+      list.innerHTML=data.map(e=>`<div class="dict-teaser-card">
+        <div class="dt-word">${esc(e.word||'')}</div>
+        <div class="dt-meaning">${esc(e.meaning||'')}</div>
+        <div class="dt-lock" data-tip="Tone marks, pronunciation audio, and full details require premium access">🔒</div>
+      </div>`).join('');
+    }
+  }catch(err){list.innerHTML=`<div class="err">${esc(err.message)}</div>`;}
+}
+
+// ── Load live map data ─────────────────────────────────────────
+async function loadMapData(){
+  const grid=document.getElementById('map-state-grid');
+  const alertEl=document.getElementById('map-alert');
+  if(!grid)return;
+  try{
+    const{data}=await db.from('oriki_entries').select('state,town');
+    if(!data||!data.length){
+      grid.innerHTML='<div class="state-msg">No data yet — submit the first Oriki to populate the map.</div>';
+      return;
+    }
+    // Count by state
+    const stateCounts={};
+    const townSet={};
+    data.forEach(r=>{
+      const s=r.state||'Unknown';
+      stateCounts[s]=(stateCounts[s]||0)+1;
+      if(r.town)townSet[r.town]=true;
+    });
+    // Update summary stats
+    const totalEl=document.getElementById('map-total');
+    const statesEl=document.getElementById('map-states');
+    const townsEl=document.getElementById('map-towns');
+    if(totalEl)totalEl.textContent=data.length.toLocaleString();
+    if(statesEl)statesEl.textContent=Object.keys(stateCounts).filter(s=>s!=='Unknown').length;
+    if(townsEl)townsEl.textContent=Object.keys(townSet).length;
+
+    // Find gaps
+    const allStates=['Oyo','Lagos','Ogun','Osun','Ekiti','Ondo','Kwara','Kogi','Edo'];
+    const maxCount=Math.max(...Object.values(stateCounts),1);
+    const missing=allStates.filter(s=>!stateCounts[s]);
+    const sparse=allStates.filter(s=>stateCounts[s]&&stateCounts[s]<5);
+
+    if(alertEl&&missing.length){
+      alertEl.style.display='block';
+      alertEl.innerHTML=`<strong>${missing.length} state${missing.length>1?'s':''} have no documentation yet:</strong> ${missing.join(', ')}. ${sparse.length?`A further ${sparse.length} state${sparse.length>1?'s':''} have fewer than 5 entries.`:''} Help close the gap.`;
+    }
+
+    // Render state cards
+    const sorted=Object.entries(stateCounts).sort((a,b)=>b[1]-a[1]);
+    const cards=allStates.map(state=>{
+      const count=stateCounts[state]||0;
+      const pct=Math.round((count/maxCount)*100);
+      const cls=count===0?'ms-none':count<5?'ms-risk':'';
+      return `<div class="map-state-card ${cls}" onclick="filterByState('${state}')" data-tip="Click to browse Oriki from ${state}">
+        <div class="ms-name">${state}</div>
+        <div class="ms-count">${count} entr${count===1?'y':'ies'}</div>
+        <div class="ms-bar"><div class="ms-bar-fill" style="width:${pct}%"></div></div>
+      </div>`;
+    });
+    // Add unknown at end if any
+    if(stateCounts['Unknown']){
+      cards.push(`<div class="map-state-card">
+        <div class="ms-name">Region unspecified</div>
+        <div class="ms-count">${stateCounts['Unknown']} entries</div>
+        <div class="ms-bar"><div class="ms-bar-fill" style="width:20%"></div></div>
+      </div>`);
+    }
+    grid.innerHTML=cards.join('');
+  }catch(err){
+    if(grid)grid.innerHTML=`<div class="err">${esc(err.message)}</div>`;
+  }
+}
+
+function filterByState(state){
+  orikiSearch=state;
+  document.getElementById('oriki-search').value=state;
+  showTab('oriki');
+  loadOriki();
+}
+
+// ── Dictionary stats and search ────────────────────────────────
+async function loadDictStats(){
+  try{
+    const{count:dc}=await db.from('yoruba_dictionary').select('*',{count:'exact',head:true});
+    if(dc!==null){const el=document.getElementById('stat-dict');if(el)el.textContent=dc.toLocaleString();}
+    const{count:dvc}=await db.from('yoruba_dictionary').select('*',{count:'exact',head:true}).eq('verified',true);
+    if(dvc!==null){const el=document.getElementById('stat-dict-verified');if(el)el.textContent=dvc.toLocaleString();}
+    const{data:posData}=await db.from('yoruba_dictionary').select('part_of_speech');
+    if(posData){const el=document.getElementById('stat-dict-pos');if(el)el.textContent=new Set(posData.map(r=>r.part_of_speech).filter(Boolean)).size;}
+  }catch(e){console.warn('Dict stats:',e.message);}
+}
+
+document.getElementById('dict-search-btn')?.addEventListener('click',()=>{dictSearch=document.getElementById('dict-search').value;loadDictionary();});
+document.getElementById('dict-search')?.addEventListener('keydown',e=>{if(e.key==='Enter'){dictSearch=e.target.value;loadDictionary();}});
+
+// Load map when tab is clicked
+document.querySelector('.nb[data-tab="map"]')?.addEventListener('click',loadMapData);
+document.querySelector('#nav-profile-btn')?.addEventListener('click',loadProfilePage);
+document.querySelector('.nb[data-tab="dictionary"]')?.addEventListener('click',()=>{loadDictionary();loadDictStats();});
+
+// ── Update Oriki detail view to include audio player and citation ──
+// Patch openOrikiDetail to add audio and citation after source block
+const _origOpenDetail=openOrikiDetail;
+openOrikiDetail=async function(id){
+  await _origOpenDetail(id);
+  // After detail renders, patch in audio player and citation button
+  const dc=document.getElementById('detail-content');
+  if(!dc)return;
+  const{data:e2}=await db.from('oriki_entries').select('audio_url,id,name,contributor_name,created_at,town,state,verified,status').eq('id',id).single();
+  if(!e2)return;
+  // Find source block and insert audio before it
+  const sourceBlock=dc.querySelector('.d-block[style*="blue"]');
+  const audioHtml=renderAudioPlayer(e2.audio_url,'Recording');
+  const audioDiv=document.createElement('div');
+  audioDiv.innerHTML=audioHtml;
+  if(sourceBlock){sourceBlock.before(audioDiv.firstChild);}
+  else{
+    const firstBlock=dc.querySelector('.d-block');
+    if(firstBlock)firstBlock.before(audioDiv.firstChild);
+  }
+  // Add citation button if verified
+  if(e2.verified||e2.status==='verified'){
+    const citeDiv=document.createElement('div');
+    citeDiv.style.marginBottom='10px';
+    citeDiv.innerHTML=`<button class="cite-btn" data-tip="Generate academic citation for this Verified Corpus entry" onclick="document.getElementById('cite-popup-${e2.id}').classList.toggle('show')">📋 Cite this entry</button>${renderCitation(e2)}`;
+    const ibar=dc.querySelector('.ibar');
+    if(ibar)ibar.after(citeDiv);
+  }
+};
+
+// ================================================================
+// AUTH SYSTEM
+// ================================================================
+let currentUser = null;
+let currentProfile = null;
+
+// ── Auth state listener ────────────────────────────────────────
+db.auth.onAuthStateChange(async (event, session) => {
+  currentUser = session?.user || null;
+  if (currentUser) {
+    await loadProfile(currentUser.id);
+    updateNavForUser();
+    closeAuth();
+  } else {
+    currentProfile = null;
+    updateNavForGuest();
+  }
+});
+
+async function loadProfile(userId) {
+  const { data } = await db.from('profiles').select('*').eq('id', userId).single();
+  currentProfile = data;
+}
+
+function updateNavForUser() {
+  const signinBtn = document.getElementById('nav-signin-btn');
+  const userMenu = document.getElementById('nav-user-menu');
+  const avatarBtn = document.getElementById('user-avatar-btn');
+  const udName = document.getElementById('ud-name');
+  const udEmail = document.getElementById('ud-email');
+  if (signinBtn) signinBtn.parentElement.style.display = 'none';
+  if (userMenu) userMenu.style.display = 'block';
+  const profileNavBtn = document.getElementById('nav-profile-btn');
+  if (profileNavBtn) profileNavBtn.style.display = 'block';
+  const name = currentProfile?.display_name || currentUser?.email?.split('@')[0] || 'User';
+  const initial = name[0].toUpperCase();
+  const avatar = currentProfile?.avatar_url || currentUser?.user_metadata?.avatar_url;
+  if (avatarBtn) avatarBtn.innerHTML = avatar
+    ? `<img src="${avatar}" alt="${esc(initial)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"/>`
+    : initial;
+  if (udName) udName.textContent = name;
+  if (udEmail) udEmail.textContent = currentUser?.email || '';
+  // Unlock dictionary if premium
+  if (currentProfile?.access_tier === 'premium' || currentProfile?.is_lexicographer) {
+    dictAccessUnlocked = true;
+  }
+}
+
+function updateNavForGuest() {
+  const signinBtn = document.getElementById('nav-signin-btn');
+  const userMenu = document.getElementById('nav-user-menu');
+  if (signinBtn) signinBtn.parentElement.style.display = 'block';
+  if (userMenu) userMenu.style.display = 'none';
+  const profileNavBtnG = document.getElementById('nav-profile-btn');
+  if (profileNavBtnG) profileNavBtnG.style.display = 'none';
+}
+
+// ── Auth modal ─────────────────────────────────────────────────
+function openAuth(tab) {
+  document.getElementById('auth-overlay').style.display = 'flex';
+  if (tab) switchAuthTab(tab);
+}
+
+function closeAuth() {
+  document.getElementById('auth-overlay').style.display = 'none';
+  clearAuthErrors();
+}
+
+function clearAuthErrors() {
+  ['signin-err','signup-err','signin-ok','signup-ok'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) { el.style.display = 'none'; el.textContent = ''; }
+  });
+}
+
+function switchAuthTab(tab) {
+  const isSignin = tab === 'signin';
+  document.getElementById('auth-tab-signin').classList.toggle('active', isSignin);
+  document.getElementById('auth-tab-signup').classList.toggle('active', !isSignin);
+  document.getElementById('auth-signin-form').style.display = isSignin ? 'flex' : 'none';
+  document.getElementById('auth-signup-form').style.display = isSignin ? 'none' : 'flex';
+  document.getElementById('auth-modal-title').textContent = isSignin ? 'Welcome back' : 'Join Oriki Archive';
+  document.getElementById('auth-modal-sub').textContent = isSignin
+    ? 'Sign in to contribute, endorse, and track your submissions.'
+    : 'Create an account to contribute to the living archive of Yoruba heritage.';
+  clearAuthErrors();
+}
+
+// ── Sign in ────────────────────────────────────────────────────
+async function signIn() {
+  const email = document.getElementById('signin-email').value.trim();
+  const password = document.getElementById('signin-password').value;
+  const btn = document.getElementById('signin-btn');
+  const errEl = document.getElementById('signin-err');
+  if (!email || !password) { showAuthErr('signin-err', 'Please enter email and password.'); return; }
+  btn.disabled = true; btn.textContent = 'Signing in…';
+  const { error } = await db.auth.signInWithPassword({ email, password });
+  btn.disabled = false; btn.textContent = 'Sign in';
+  if (error) showAuthErr('signin-err', error.message);
+}
+
+// ── Sign up ────────────────────────────────────────────────────
+async function signUp() {
+  const name = document.getElementById('signup-name').value.trim();
+  const email = document.getElementById('signup-email').value.trim();
+  const password = document.getElementById('signup-password').value;
+  const btn = document.getElementById('signup-btn');
+  if (!name || !email || !password) { showAuthErr('signup-err', 'Please fill in all fields.'); return; }
+  if (password.length < 6) { showAuthErr('signup-err', 'Password must be at least 6 characters.'); return; }
+  btn.disabled = true; btn.textContent = 'Creating account…';
+  const { error } = await db.auth.signUp({
+    email, password,
+    options: { data: { full_name: name } }
+  });
+  btn.disabled = false; btn.textContent = 'Create account';
+  if (error) { showAuthErr('signup-err', error.message); }
+  else {
+    const okEl = document.getElementById('signup-ok');
+    if (okEl) { okEl.textContent = 'Account created! Check your email to confirm, or sign in now.'; okEl.style.display = 'block'; }
+  }
+}
+
+// ── Google sign in ─────────────────────────────────────────────
+async function signInGoogle() {
+  const { error } = await db.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: window.location.href }
+  });
+  if (error) showAuthErr('signin-err', error.message);
+}
+
+// ── Sign out ───────────────────────────────────────────────────
+async function signOut() {
+  await db.auth.signOut();
+  currentUser = null;
+  currentProfile = null;
+  dictAccessUnlocked = false;
+  updateNavForGuest();
+  showTab('oriki');
+  toggleUserMenu();
+}
+
+// ── Password reset ─────────────────────────────────────────────
+async function sendPasswordReset() {
+  const email = document.getElementById('signin-email').value.trim();
+  if (!email) { showAuthErr('signin-err', 'Enter your email address first.'); return; }
+  const { error } = await db.auth.resetPasswordForEmail(email);
+  if (error) { showAuthErr('signin-err', error.message); }
+  else {
+    const okEl = document.getElementById('signin-ok');
+    if (okEl) { okEl.textContent = 'Password reset email sent. Check your inbox.'; okEl.style.display = 'block'; }
+  }
+}
+
+function showAuthErr(id, msg) {
+  const el = document.getElementById(id);
+  if (el) { el.textContent = msg; el.style.display = 'block'; }
+}
+
+// ── User menu toggle ───────────────────────────────────────────
+function toggleUserMenu() {
+  const dd = document.getElementById('user-dropdown');
+  if (dd) dd.classList.toggle('show');
+}
+document.addEventListener('click', (e) => {
+  const wrap = document.querySelector('.user-menu-wrap');
+  if (wrap && !wrap.contains(e.target)) {
+    document.getElementById('user-dropdown')?.classList.remove('show');
+  }
+});
+
+// ── Profile page ───────────────────────────────────────────────
+async function loadProfilePage() {
+  const container = document.getElementById('profile-content');
+  if (!container) return;
+  if (!currentUser) {
+    container.innerHTML = `<div style="text-align:center;padding:3rem 1rem;">
+      <div style="font-size:18px;font-weight:600;color:var(--ink);margin-bottom:8px;">Sign in to view your profile</div>
+      <div style="font-size:13px;color:var(--ink3);margin-bottom:1.5rem;">Track your contributions, endorsements, and archive activity.</div>
+      <button class="submit-btn" style="width:auto;padding:10px 24px;" onclick="openAuth()">Sign in</button>
+    </div>`;
+    return;
+  }
+  container.innerHTML = '<div class="state-msg">Loading profile…</div>';
+  // Get submission counts
+  const [
+    { count: orikiCount },
+    { count: oweCount },
+    { count: ijalaCount },
+    { count: commentCount }
+  ] = await Promise.all([
+    db.from('oriki_entries').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id),
+    db.from('owe_entries').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id),
+    db.from('ijala_entries').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id),
+    db.from('comments').select('*', { count: 'exact', head: true }).eq('user_id', currentUser.id),
+  ]);
+  const totalSubmissions = (orikiCount || 0) + (oweCount || 0) + (ijalaCount || 0);
+  const name = currentProfile?.display_name || currentUser.email?.split('@')[0] || 'Contributor';
+  const avatar = currentProfile?.avatar_url || currentUser.user_metadata?.avatar_url;
+  const tier = currentProfile?.contributor_type || 'community';
+  const tierLabels = { community: 'Community contributor', researcher: 'Researcher', premium: 'Premium member', lexicographer: 'Lexicographer' };
+  // Get recent oriki submissions
+  const { data: recentOriki } = await db.from('oriki_entries').select('id,name,category,town,created_at,verified,status').eq('user_id', currentUser.id).order('created_at', { ascending: false }).limit(5);
+  container.innerHTML = `
+    <div class="profile-hero">
+      <div class="profile-avatar">${avatar ? `<img src="${avatar}" alt="${esc(name[0])}"/>` : esc(name[0].toUpperCase())}</div>
+      <div>
+        <div class="profile-name">${esc(name)}</div>
+        <div class="profile-type">${tierLabels[tier] || 'Community contributor'}</div>
+        <div style="font-size:11px;color:var(--ink3);margin-top:4px;">${esc(currentUser.email || '')}</div>
+      </div>
+    </div>
+    <div class="profile-stats">
+      <div class="ps-card"><div class="ps-num">${totalSubmissions}</div><div class="ps-lbl">Submissions</div></div>
+      <div class="ps-card"><div class="ps-num">${commentCount || 0}</div><div class="ps-lbl">Comments</div></div>
+      <div class="ps-card"><div class="ps-num">${currentProfile?.total_endorsements_given || 0}</div><div class="ps-lbl">Endorsements</div></div>
+    </div>
+    ${recentOriki && recentOriki.length ? `
+    <div class="d-block">
+      <div class="d-block-label">Your recent Oriki submissions</div>
+      ${recentOriki.map(e => `
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:0.5px solid var(--border);cursor:pointer;" onclick="openOrikiDetail('${e.id}')">
+          <div>
+            <div style="font-size:13px;font-weight:500;color:var(--ink);">${esc(e.name)}</div>
+            <div style="font-size:11px;color:var(--ink3);">${esc(e.town || '')} · ${esc(e.category || '')}</div>
+          </div>
+          ${e.verified ? '<span class="tbadge tb-verified">⭐ Verified</span>' : '<span class="tbadge tb-community">Community</span>'}
+        </div>`).join('')}
+    </div>` : ''}
+    <div class="d-block">
+      <div class="d-block-label">Breakdown</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+        <div class="stat-card"><div class="stat-num">${orikiCount || 0}</div><div class="stat-lbl">Oriki</div></div>
+        <div class="stat-card"><div class="stat-num">${oweCount || 0}</div><div class="stat-lbl">Owe</div></div>
+        <div class="stat-card"><div class="stat-num">${ijalaCount || 0}</div><div class="stat-lbl">Ijala</div></div>
+        <div class="stat-card"><div class="stat-num">${commentCount || 0}</div><div class="stat-lbl">Comments</div></div>
+      </div>
+    </div>
+    <button class="submit-btn" style="margin-top:0.5rem;" onclick="showTab('submit')">+ Submit new content</button>
+    <button style="width:100%;padding:10px;background:none;border:0.5px solid var(--border2);border-radius:var(--r-md);font-size:13px;color:var(--red);cursor:pointer;margin-top:8px;font-family:var(--font-sans);" onclick="signOut()">Sign out</button>
+  `;
+}
+
+// Load profile when tab is clicked
+document.querySelector('.nb[data-tab="profile"]') && document.querySelector('.nb[data-tab="profile"]').addEventListener('click', loadProfilePage);
+
+// ── Attach user_id to submissions ──────────────────────────────
+function getCurrentUserId() {
+  return currentUser?.id || null;
+}
+
+// ================================================================
+// GLOBAL SEARCH
+// ================================================================
+let gsearchTimeout = null;
+
+function openGlobalSearch() {
+  document.getElementById('gsearch-overlay').style.display = 'flex';
+  setTimeout(() => document.getElementById('gsearch-input')?.focus(), 100);
+}
+
+function closeGlobalSearch() {
+  document.getElementById('gsearch-overlay').style.display = 'none';
+  document.getElementById('gsearch-input').value = '';
+  document.getElementById('gsearch-body').innerHTML = '<div class="gsearch-empty">Start typing to search across the entire archive</div>';
+}
+
+document.addEventListener('keydown', e => {
+  if ((e.metaKey || e.ctrlKey) && e.key === 'k') { e.preventDefault(); openGlobalSearch(); }
+  if (e.key === 'Escape') closeGlobalSearch();
+});
+
+async function runGlobalSearch(query) {
+  const body = document.getElementById('gsearch-body');
+  clearTimeout(gsearchTimeout);
+  if (!query.trim()) {
+    body.innerHTML = '<div class="gsearch-empty">Start typing to search across the entire archive</div>';
+    return;
+  }
+  if (query.length < 2) return;
+  body.innerHTML = '<div class="gsearch-loading">Searching…</div>';
+  gsearchTimeout = setTimeout(async () => {
+    try {
+      const q = query.trim();
+      const [orikiRes, oweRes, ijalaRes] = await Promise.all([
+        db.from('oriki_entries').select('id,name,category,town,state').or(`name.ilike.%${q}%,yoruba_text.ilike.%${q}%,town.ilike.%${q}%,kingdom.ilike.%${q}%`).limit(6),
+        db.from('owe_entries').select('id,proverb,region').or(`proverb.ilike.%${q}%,meaning.ilike.%${q}%,literal_translation.ilike.%${q}%`).limit(4),
+        db.from('ijala_entries').select('id,title,region,associated_animal').or(`title.ilike.%${q}%,yoruba_text.ilike.%${q}%`).limit(3),
+      ]);
+      // Also search festivals (hardcoded)
+      const festResults = FESTIVALS.filter(f =>
+        f.name.toLowerCase().includes(q.toLowerCase()) ||
+        f.town.toLowerCase().includes(q.toLowerCase()) ||
+        f.significance.toLowerCase().includes(q.toLowerCase()) ||
+        (f.deity && f.deity.toLowerCase().includes(q.toLowerCase()))
+      ).slice(0,3);
+
+      const oriki = orikiRes.data || [];
+      const owe = oweRes.data || [];
+      const ijala = ijalaRes.data || [];
+      const total = oriki.length + owe.length + ijala.length + festResults.length;
+
+      if (total === 0) {
+        body.innerHTML = `<div class="gsearch-empty">No results found for "<strong>${esc(q)}</strong>"</div>`;
+        return;
+      }
+
+      let html = '';
+
+      if (oriki.length) {
+        html += `<div class="gsearch-section">
+          <div class="gsearch-section-title">Oriki — praise poetry (${oriki.length})</div>
+          ${oriki.map(e => `<div class="gsearch-item" onclick="closeGlobalSearch();openOrikiDetail('${e.id}')">
+            <span class="gi-type ${catClass(e.category)}">${esc(e.category||'Oriki')}</span>
+            <div><div class="gi-name">${esc(e.name)}</div><div class="gi-meta">${[e.town,e.state].filter(Boolean).map(esc).join(' · ')}</div></div>
+          </div>`).join('')}
+        </div>`;
+      }
+      if (owe.length) {
+        html += `<div class="gsearch-section">
+          <div class="gsearch-section-title">Owe — proverbs (${owe.length})</div>
+          ${owe.map(e => `<div class="gsearch-item" onclick="closeGlobalSearch();showTab('owe')">
+            <span class="gi-type t-owe">Owe</span>
+            <div><div class="gi-name">${esc((e.proverb||'').slice(0,60))}${(e.proverb||'').length>60?'…':''}</div><div class="gi-meta">${esc(e.region||'Yorubaland')}</div></div>
+          </div>`).join('')}
+        </div>`;
+      }
+      if (ijala.length) {
+        html += `<div class="gsearch-section">
+          <div class="gsearch-section-title">Ijala — hunters poetry (${ijala.length})</div>
+          ${ijala.map(e => `<div class="gsearch-item" onclick="closeGlobalSearch();showTab('ijala')">
+            <span class="gi-type t-hunter">Ijala</span>
+            <div><div class="gi-name">${esc(e.title||'')}</div><div class="gi-meta">${[e.associated_animal,e.region].filter(Boolean).map(esc).join(' · ')}</div></div>
+          </div>`).join('')}
+        </div>`;
+      }
+      if (festResults.length) {
+        html += `<div class="gsearch-section">
+          <div class="gsearch-section-title">Festivals (${festResults.length})</div>
+          ${festResults.map(f => `<div class="gsearch-item" onclick="closeGlobalSearch();showTab('festivals');openFest('${f.id}')">
+            <span class="gi-type" style="background:var(--amber-pale);color:var(--amber);">Festival</span>
+            <div><div class="gi-name">${esc(f.name)}</div><div class="gi-meta">${esc(f.town)} · ${esc(f.month)}</div></div>
+          </div>`).join('')}
+        </div>`;
+      }
+      body.innerHTML = html;
+    } catch(err) {
+      body.innerHTML = `<div class="gsearch-empty">Search error: ${esc(err.message)}</div>`;
+    }
+  }, 300);
+}
+
+// ================================================================
+// SOCIAL SHARING
+// ================================================================
+function getShareUrl(entryId) {
+  // When deployed, this will be the real URL
+  const base = window.location.hostname === 'localhost' || window.location.protocol === 'file:'
+    ? 'https://orikiarchive.org'
+    : window.location.origin;
+  return `${base}/entry/${entryId}`;
+}
+
+function renderShareBar(entry) {
+  const url = encodeURIComponent(getShareUrl(entry.id));
+  const text = encodeURIComponent(`"${entry.name}" — Yoruba praise poetry from the Oriki Archive`);
+  const waText = encodeURIComponent(`I found this on the Oriki Archive — a living repository of Yoruba heritage. Search for your own family or town:\n\n"${entry.name}"\n\n`);
+  return `<div class="share-bar">
+    <a class="share-btn share-wa" href="https://wa.me/?text=${waText}${url}" target="_blank" rel="noopener" data-tip="Share on WhatsApp — great for family groups">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.124.557 4.118 1.529 5.845L0 24l6.335-1.509A11.955 11.955 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.885 0-3.644-.5-5.163-1.374l-.37-.217-3.762.896.927-3.67-.24-.385A9.937 9.937 0 012 12C2 6.478 6.478 2 12 2s10 4.478 10 10-4.478 10-10 10z"/></svg>
+      WhatsApp
+    </a>
+    <a class="share-btn share-tw" href="https://twitter.com/intent/tweet?text=${text}&url=${url}" target="_blank" rel="noopener" data-tip="Share on X / Twitter">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.747l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      Share
+    </a>
+    <button class="share-btn share-copy" onclick="copyEntryLink('${entry.id}')" data-tip="Copy link to clipboard">
+      📋 Copy link
+    </button>
+  </div>`;
+}
+
+function copyEntryLink(entryId) {
+  const url = getShareUrl(entryId);
+  navigator.clipboard.writeText(url).then(() => {
+    showFeedback('Link copied to clipboard!', 'ok');
+  }).catch(() => {
+    // Fallback
+    const el = document.createElement('input');
+    el.value = url;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    showFeedback('Link copied!', 'ok');
+  });
+}
+
+// ================================================================
+// FESTIVALS — MOVE TO DATABASE
+// ================================================================
+async function seedFestivalsToDb() {
+  // One-time seeding function — call from console: seedFestivalsToDb()
+  // Seeds the hardcoded festivals into festival_entries table
+  for (const f of FESTIVALS) {
+    const { error } = await db.from('festival_entries').upsert({
+      id: f.id.length === 36 ? f.id : undefined, // only use if valid UUID
+      name: f.name,
+      yoruba_name: f.yoruba_name,
+      category: f.category,
+      town: f.town,
+      state: f.state,
+      site: f.site,
+      deity: f.deity,
+      month: f.month,
+      month_num: f.month_num,
+      duration_days: f.duration,
+      date_note: f.date_note,
+      significance: f.significance,
+      history: f.history,
+      programme: f.events,
+      travel_info: f.travel,
+      oriki_links: f.oriki_links,
+      sources: f.sources,
+      unesco: f.unesco,
+      verified: f.verified,
+      status: 'verified'
+    }, { onConflict: 'name' });
+    if (error) console.warn('Seed error for', f.name, error.message);
+    else console.log('Seeded:', f.name);
+  }
+  console.log('Festival seeding complete.');
+}
+
+async function loadFestivalsFromDb() {
+  // Try loading from DB first, fall back to hardcoded
+  try {
+    const { data, error } = await db.from('festival_entries').select('*').eq('verified', true).order('month_num', { ascending: true });
+    if (!error && data && data.length > 0) {
+      // Map DB format back to FESTIVALS format for renderFests
+      return data.map(f => ({
+        id: f.id,
+        name: f.name,
+        yoruba_name: f.yoruba_name,
+        category: f.category,
+        tags: [f.category, f.unesco ? 'Heritage' : null].filter(Boolean),
+        banner: getBannerForCategory(f.category),
+        month: f.month,
+        month_num: f.month_num,
+        duration: f.duration_days,
+        date_note: f.date_note,
+        town: f.town,
+        state: f.state,
+        site: f.site,
+        deity: f.deity,
+        unesco: f.unesco,
+        significance: f.significance,
+        history: f.history,
+        events: f.programme || [],
+        oriki_links: f.oriki_links || [],
+        sources: f.sources || [],
+        travel: f.travel_info || {},
+        citable: true,
+        verified: f.verified,
+        contributor_name: f.contributor_name
+      }));
+    }
+  } catch(e) { console.warn('DB festivals failed, using hardcoded:', e.message); }
+  return null; // Fall back to FESTIVALS constant
+}
+
+function getBannerForCategory(cat) {
+  const banners = {
+    'Deity': 'linear-gradient(135deg,#1A4D2E,#2D8A5A)',
+    'Royal': 'linear-gradient(135deg,#4A1B0C,#8B3A1A)',
+    'Ancestral': 'linear-gradient(135deg,#2D3A1A,#5A7A2A)',
+    'Harvest': 'linear-gradient(135deg,#4A3A00,#8B6914)',
+    'Heritage': 'linear-gradient(135deg,#0A2D4D,#1A6B9A)',
+  };
+  return banners[cat] || 'linear-gradient(135deg,#3D1A0A,#B5651D)';
+}
+
+// Override renderUpcoming and renderFests to try DB first
+const _origRenderFests = renderFests;
+const _origRenderUpcoming = renderUpcoming;
+
+async function initFestivals() {
+  const dbFests = await loadFestivalsFromDb();
+  if (dbFests) {
+    // Replace global FESTIVALS with DB data
+    FESTIVALS.length = 0;
+    FESTIVALS.push(...dbFests);
+  }
+  renderUpcoming();
+  renderFests();
+}
+
+// ── Init ───────────────────────────────────────────────────────
+loadOriki();
+loadLearnAudio();
+loadOriki();
+loadOwe();
+loadIjala();
+loadStats();
+loadDictStats();
+initFestivals();
+</script>
+</body>
+</html>
