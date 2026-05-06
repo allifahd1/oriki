@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Oriki Archive</title>
+  <title>Oriki Archive v11 — Social Cards</title>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -554,6 +554,71 @@
     .share-copy { border-color: var(--amber); color: var(--amber); }
     .share-copy:hover { background: var(--amber); color: #fff; }
 
+    /* ── V8 STRUCTURED SOURCES / BACKEND VISIBILITY ── */
+    .source-citations{margin-top:10px;}
+    .source-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-md);padding:10px 12px;margin-bottom:6px;}
+    .source-title{font-size:13px;font-weight:600;color:var(--ink);line-height:1.4;}
+    .source-meta{font-size:11px;color:var(--ink3);margin-top:2px;line-height:1.5;}
+    .source-link{font-size:11px;color:var(--amber);text-decoration:underline;margin-top:4px;display:inline-block;}
+    .source-badge{font-size:10px;background:var(--gold-bg);color:var(--gold);padding:2px 6px;border-radius:20px;margin-left:6px;}
+    .backend-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:8px;}
+    .backend-cell{background:var(--bg2);border-radius:var(--r-md);padding:7px 9px;min-width:0;}
+    .backend-label{font-size:9px;color:var(--ink3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:2px;}
+    .backend-value{font-size:12px;color:var(--ink2);line-height:1.45;word-break:break-word;}
+    .backend-value a{color:var(--amber);}
+    .source-browser-card{background:var(--bg);border:0.5px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.125rem;margin-bottom:10px;}
+    .source-browser-title{font-size:14px;font-weight:700;color:var(--ink);line-height:1.4;}
+    .source-browser-meta{font-size:12px;color:var(--ink3);line-height:1.6;margin-top:4px;}
+    .source-browser-note{font-size:12px;color:var(--ink2);line-height:1.6;margin-top:6px;}
+    @media (max-width: 600px){.backend-grid{grid-template-columns:1fr;}}
+
+  
+    /* ── SOCIAL PIPELINE ── */
+    .social-hero{background:linear-gradient(135deg,#1C1410 0%,#3D1A0A 55%,#B5651D 100%);border-radius:var(--r-lg);padding:1.35rem;margin-bottom:1rem;color:#fff;}
+    .social-hero-title{font-size:20px;font-weight:700;margin-bottom:5px;}
+    .social-hero-sub{font-size:13px;opacity:.85;line-height:1.65;}
+    .social-grid{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:1rem;}
+    .social-card{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r-lg);padding:1rem 1.125rem;}
+    .social-card-title{font-size:14px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+    .social-card-sub{font-size:12px;color:var(--ink2);line-height:1.6;margin-bottom:10px;}
+    .social-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+    .social-btn{font-size:12px;padding:6px 12px;border-radius:20px;border:.5px solid var(--border2);background:var(--bg);color:var(--ink2);cursor:pointer;font-family:var(--font-sans);text-decoration:none;display:inline-flex;align-items:center;gap:5px;}
+    .social-btn:hover{border-color:var(--amber);color:var(--amber);}
+    .social-btn.primary{background:var(--amber);border-color:var(--amber);color:#fff;}
+    .social-btn.whatsapp{border-color:#25D366;color:#128C4A;}
+    .social-btn.x{border-color:#1DA1F2;color:#1DA1F2;}
+    .social-btn.facebook{border-color:#1877F2;color:#1877F2;}
+    .social-btn.copy{border-color:var(--amber);color:var(--amber);}
+    .social-inline-actions{display:flex;gap:5px;flex-wrap:wrap;margin:8px 0 6px;}
+    .social-mini-btn{font-size:11px;padding:4px 9px;border-radius:20px;border:.5px solid var(--border2);background:var(--bg);color:var(--ink2);cursor:pointer;font-family:var(--font-sans);display:inline-flex;align-items:center;gap:4px;}
+    .social-mini-btn:hover{border-color:var(--amber);color:var(--amber);}
+    .social-mini-btn.card{border-color:var(--amber);color:var(--amber);}
+    .social-mini-btn.wa{border-color:#25D366;color:#128C4A;}
+    .social-mini-btn.xbtn{border-color:#111827;color:#111827;}
+    .social-mini-btn.share{background:var(--amber);border-color:var(--amber);color:#fff;}
+
+    .social-caption{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r-md);padding:9px 11px;font-size:12px;color:var(--ink2);line-height:1.65;white-space:pre-wrap;margin-top:8px;}
+    .social-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+    .social-field{margin-bottom:8px;}
+    .social-label{display:block;font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;}
+    .social-input,.social-select,.social-textarea{width:100%;font-size:13px;padding:8px 11px;border-radius:var(--r-md);border:.5px solid var(--border2);background:var(--bg);color:var(--ink);font-family:var(--font-sans);outline:none;}
+    .social-textarea{min-height:86px;resize:vertical;line-height:1.55;}
+    .social-input:focus,.social-select:focus,.social-textarea:focus{border-color:var(--amber);}
+    .social-pipeline-step{display:flex;gap:10px;align-items:flex-start;margin-top:8px;}
+    .social-step-num{width:23px;height:23px;border-radius:50%;background:var(--amber);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+    .social-step-text{font-size:13px;color:var(--ink2);line-height:1.6;}
+    .social-kit{background:var(--amber-pale);border:.5px solid var(--amber-light);border-radius:var(--r-lg);padding:1rem 1.125rem;margin-bottom:10px;}
+    .social-kit-title{font-size:13px;font-weight:700;color:#713F12;margin-bottom:4px;}
+    .social-kit-sub{font-size:12px;color:#92400E;line-height:1.55;}
+    @media (max-width:600px){.social-form-grid{grid-template-columns:1fr;}}
+
+    /* ── V10 SHARE CARD IMAGE GENERATOR ── */
+    .social-card-preview-wrap{margin-top:10px;display:none;}
+    .social-card-preview-wrap.show{display:block;}
+    .social-card-preview-img{width:100%;max-width:320px;border-radius:var(--r-md);border:.5px solid var(--border2);display:block;background:#fff;box-shadow:0 4px 18px rgba(0,0,0,.08);}
+    .social-card-tools{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;}
+    .social-card-note{font-size:11px;color:#92400E;line-height:1.5;margin-top:7px;}
+
   </style>
 </head>
 <body>
@@ -571,6 +636,8 @@
       <button class="nb" data-tab="learn" data-tip="Yoruba alphabet, tone marks and numbers">Learn</button>
       <button class="nb" data-tab="map" data-tip="Documentation coverage map — which regions need contributions">Map</button>
       <button class="nb" data-tab="about" data-tip="About this archive — mission, how it works, how to contribute">About</button>
+      <button class="nb" data-tab="sources" data-tip="Browse structured source references and extraction links">Sources</button>
+      <button class="nb" data-tab="social" data-tip="Share entries, invite family knowledge, and bring social media discoveries into the archive">Social</button>
       <button class="nb" id="nav-profile-btn" data-tab="profile" data-tip="Your profile and submissions" style="display:none;">👤 Profile</button>
       <button class="nb submit-nb" data-tab="submit" data-tip="Contribute an Oriki, Owe, Ijala or Yoruba word">+ Submit</button>
     </div>
@@ -1125,6 +1192,142 @@
     </div>
   </div>
 
+
+
+  <!-- ═══ SOCIAL PIPELINE TAB ═══ -->
+  <div id="tab-social" class="tab">
+    <div class="social-hero">
+      <div class="social-hero-title">Social Pipeline</div>
+      <div class="social-hero-sub">Bring Yoruba oral heritage from family groups and social posts into the archive, then send verified archive entries back out with share-ready captions.</div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stat-social-inbox">—</div><div class="stat-lbl">Social leads</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-social-shares">—</div><div class="stat-lbl">Shares logged</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-social-verified">—</div><div class="stat-lbl">Linked sources</div></div>
+    </div>
+
+    <div class="social-grid">
+      <div class="social-card">
+        <div class="social-card-title">From social media → Oriki Archive</div>
+        <div class="social-card-sub">Paste a public post, WhatsApp note, YouTube link, Instagram/TikTok caption, or family-group text. It enters a review queue instead of becoming verified automatically.</div>
+        <div class="social-pipeline-step"><div class="social-step-num">1</div><div class="social-step-text">Capture the source URL or pasted text.</div></div>
+        <div class="social-pipeline-step"><div class="social-step-num">2</div><div class="social-step-text">Store it as a social lead with contributor and platform context.</div></div>
+        <div class="social-pipeline-step"><div class="social-step-num">3</div><div class="social-step-text">Review, verify, then convert into Oriki/Owe/Ijala/Dictionary entries with provenance.</div></div>
+      </div>
+
+      <div class="social-card">
+        <div class="social-card-title">Submit a social lead</div>
+        <div class="social-card-sub">Use this when someone posts an oríkì, proverb, chant, word, festival note, or audio reference online.</div>
+
+        <div class="social-form-grid">
+          <div class="social-field">
+            <label class="social-label">Platform</label>
+            <select class="social-select" id="social-platform">
+              <option>WhatsApp</option><option>X / Twitter</option><option>Instagram</option><option>TikTok</option><option>Facebook</option><option>YouTube</option><option>Archive / Website</option><option>Other</option>
+            </select>
+          </div>
+          <div class="social-field">
+            <label class="social-label">Content type</label>
+            <select class="social-select" id="social-content-type">
+              <option>oriki</option><option>owe</option><option>ijala</option><option>dictionary</option><option>festival</option><option>audio</option><option>unknown</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="social-field">
+          <label class="social-label">Source URL or group/source note</label>
+          <input class="social-input" id="social-url" placeholder="https://… or “Auntie’s WhatsApp voice note, May 2026”"/>
+        </div>
+
+        <div class="social-form-grid">
+          <div class="social-field">
+            <label class="social-label">Poster / handle</label>
+            <input class="social-input" id="social-handle" placeholder="@handle or name"/>
+          </div>
+          <div class="social-field">
+            <label class="social-label">Contributor name</label>
+            <input class="social-input" id="social-contributor" placeholder="Your name"/>
+          </div>
+        </div>
+
+        <div class="social-field">
+          <label class="social-label">Text / transcript / caption</label>
+          <textarea class="social-textarea" id="social-text" placeholder="Paste exact visible text or your transcript. Do not translate unless the source provides a translation."></textarea>
+        </div>
+
+        <div class="social-field">
+          <label class="social-label">Notes for reviewers</label>
+          <textarea class="social-textarea" id="social-notes" placeholder="Who said it? Which town/family? Is there audio? Any uncertainty?"></textarea>
+        </div>
+
+        <button class="submit-btn" onclick="submitSocialLead()">Submit social lead</button>
+        <div id="social-submit-msg" style="margin-top:8px;"></div>
+      </div>
+
+      <div class="social-card">
+        <div class="social-card-title">From Oriki Archive → social media</div>
+        <div class="social-card-sub">Use ready-made campaigns that encourage people to search, share, and contribute without weakening verification standards.</div>
+
+        <div class="social-caption" id="social-general-caption">I found the Oriki Archive — a living digital archive for Yoruba oríkì, òwe, ìjálá, dictionary words, festivals and learning resources.
+
+Search your family, town, lineage, proverb or Yoruba word:
+https://oriki-iota.vercel.app
+
+If you know a version, contribute it so it can be preserved.</div>
+
+        <div class="social-actions">
+          <button class="social-btn copy" onclick="copySocialText('social-general-caption')">📋 Copy caption</button>
+          <a class="social-btn whatsapp" id="social-general-wa" target="_blank" rel="noopener">WhatsApp</a>
+          <a class="social-btn x" id="social-general-x" target="_blank" rel="noopener">X</a>
+          <a class="social-btn facebook" id="social-general-fb" target="_blank" rel="noopener">Facebook</a>
+        </div>
+      </div>
+
+      <div class="social-card">
+        <div class="social-card-title">Contribution prompts</div>
+        <div class="social-card-sub">Use these as recurring posts to make contribution feel normal and encouraged.</div>
+        <div class="social-caption" id="social-prompt-1">Do you know your family oríkì?
+
+Search the Oriki Archive. If your family, town, or lineage is missing, submit what you know and include the source/person you learned it from.
+
+https://oriki-iota.vercel.app</div>
+        <div class="social-actions">
+          <button class="social-btn copy" onclick="copySocialText('social-prompt-1')">Copy family prompt</button>
+        </div>
+
+        <div class="social-caption" id="social-prompt-2">Yoruba elders are libraries.
+
+Record, write down, or submit proverbs, oríkì, ìjálá, festival memories, and rare words — with source notes — so they can be preserved responsibly.
+
+https://oriki-iota.vercel.app</div>
+        <div class="social-actions">
+          <button class="social-btn copy" onclick="copySocialText('social-prompt-2')">Copy elder prompt</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ═══ SOURCES TAB ═══ -->
+  <div id="tab-sources" class="tab">
+    <div class="hero">
+      <div class="hero-title">Sources & Provenance</div>
+      <div class="hero-sub">Structured source references and entry-source links used by the Verified Corpus.</div>
+      <div class="search-row">
+        <input id="sources-search" type="text" placeholder="Search title, author, publisher, identifier…"/>
+        <button id="sources-search-btn" data-tip="Search source metadata">Search</button>
+      </div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-card"><div class="stat-num" id="stat-sources">—</div><div class="stat-lbl">Sources</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-entry-sources">—</div><div class="stat-lbl">Entry links</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-fulltext">—</div><div class="stat-lbl">Full text</div></div>
+    </div>
+    <div class="section-title">Source references</div>
+    <div id="sources-list"><div class="state-msg">Run the provenance migration, then load sources here.</div></div>
+  </div>
+
   <!-- ═══ PROFILE TAB ═══ -->
   <div id="tab-profile" class="tab">
     <div id="profile-content"></div>
@@ -1207,6 +1410,7 @@ function renderOrikiCard(e){
     </div>
     ${meta?`<div class="ec-meta">${esc(meta)}${e.contributor_name?' · '+esc(e.contributor_name):''}</div>`:''}
     ${snippet?`<div class="ec-snippet">${esc(snippet)}</div>`:''}
+    ${renderInlineSocialActionsV11(e,'oriki_entries')}
     <div class="trust-row">${trustBadge(e)}${(localComments[e.id]||[]).length?`<span style="font-size:11px;color:var(--ink3);">${(localComments[e.id]||[]).length} comment(s)</span>`:''}</div>
     <div class="ibar">
       <button class="ib${ia.endorsed?' on-endorse':''}" data-tip="Endorse this entry — confirms you can corroborate its accuracy" onclick="event.stopPropagation();endorse('${e.id}',this)">👍 <span>${endorse}</span></button>
@@ -1223,11 +1427,13 @@ function renderOweCard(e){
   const ia=localInteractions[e.id]||{};
   const endorse=(e.endorsements||0)+(ia.endorsed?1:0);
   const dispute=(e.disputes||0)+(ia.disputed?1:0);
-  return `<div class="owe-card">
+  return `<div class="owe-card" onclick="openOweDetailV8('${e.id}')" style="cursor:pointer;">
     <div class="owe-yoruba">${esc(e.proverb||'')}</div>
     ${e.literal_translation?`<div class="owe-literal"><strong>Literal:</strong> ${esc(e.literal_translation)}</div>`:''}
     ${e.meaning?`<div class="owe-meaning"><strong>Meaning:</strong> ${esc(e.meaning)}</div>`:''}
+    ${renderInlineSocialActionsV11(e,'owe_entries')}
     ${e.audio_url?renderAudioPlayer(e.audio_url,'Listen'):''}
+    ${e.source_name?`<div class="source-meta">Source: ${esc(e.source_name)}${e.source_url?` · <a href="${esc(e.source_url)}" target="_blank" onclick="event.stopPropagation()">link</a>`:''}</div>`:''}
     <div class="trust-row" style="margin-top:8px;">${e.verified?'<span class="tbadge tb-verified">⭐ Verified</span>':e.status==='nominated'?'<span class="tbadge tb-nominated">⬆ Nominated</span>':'<span class="tbadge tb-community">Community</span>'}</div>
     <div class="ibar" style="margin-top:6px;">
       <button class="ib${ia.endorsed?' on-endorse':''}" data-tip="Endorse this proverb — confirm it is accurate" onclick="endorse('${e.id}',this)">👍 <span>${endorse}</span></button>
@@ -1588,19 +1794,20 @@ async function loadIjala(){
     list.innerHTML=data.map(e=>{
       const snippet=e.yoruba_text?e.yoruba_text.slice(0,140)+(e.yoruba_text.length>140?'…':''):'';
       const meta=[e.associated_animal,e.region,e.town].filter(Boolean).join(' · ');
-      return `<div class="entry-card">
+      return `<div class="entry-card" onclick="openIjalaDetailV8('${e.id}')">
         <div class="ec-top">
           <div class="ec-name">${esc(e.title)}</div>
           <div class="type-badge t-hunter">Ijala</div>
         </div>
         ${meta?`<div class="ec-meta">${esc(meta)}${e.contributor_name?' · '+esc(e.contributor_name):''}</div>`:''}
         ${snippet?`<div class="ec-snippet">${esc(snippet)}</div>`:''}
+        ${renderInlineSocialActionsV11(e,'ijala_entries')}
         ${e.audio_url?renderAudioPlayer(e.audio_url,'Listen'):''}
         <div class="trust-row">${e.verified?'<span class="tbadge tb-verified">⭐ Verified</span>':e.status==='nominated'?'<span class="tbadge tb-nominated">⬆ Nominated</span>':'<span class="tbadge tb-community">Community</span>'}</div>
         <div class="ibar">
-          <button class="ib" onclick="endorse('${e.id}',this)">👍 <span>${e.endorsements||0}</span></button>
-          <button class="ib" onclick="flagDispute('${e.id}',this)">⚑ <span>${e.disputes||0}</span></button>
-          ${!e.verified?`<button class="ib" onclick="nominateEntry('${e.id}','ijala_entries',this)" title="Nominate for verification">⬆</button>`:''}
+          <button class="ib" onclick="event.stopPropagation();endorse('${e.id}',this)">👍 <span>${e.endorsements||0}</span></button>
+          <button class="ib" onclick="event.stopPropagation();flagDispute('${e.id}',this)">⚑ <span>${e.disputes||0}</span></button>
+          ${!e.verified?`<button class="ib" onclick="event.stopPropagation();nominateEntry('${e.id}','ijala_entries',this)" title="Nominate for verification">⬆</button>`:''}
         </div>
       </div>`;
     }).join('');
@@ -1928,6 +2135,7 @@ function openFest(id,scrollTravel){
     <div class="fd-section" style="background:var(--blue-bg);"><div class="fd-section-title" style="color:var(--blue);">Citable sources</div><div class="cite-box">${sources}</div>${f.unesco?'<div style="margin-top:8px;"><span class="unesco-pill">UNESCO Intangible Cultural Heritage</span></div>':''}</div>
     <div class="fd-section"><div class="fd-section-title">Trust status</div><div class="fd-text">${f.verified?'⭐ Verified Corpus — reviewed against academic and primary sources. Citable.':'Community submission — pending verification.'}</div></div>
   `;
+  appendSocialKitToDetailV9({id:f.id,name:f.name,yoruba_name:f.yoruba_name,significance:f.significance,history:f.history,town:f.town,state:f.state,month:f.month},'festival_entries','fest-detail-content');
   if(scrollTravel)setTimeout(()=>document.getElementById('travel-section')?.scrollIntoView({behavior:'smooth',block:'start'}),200);
 }
 
@@ -2124,7 +2332,7 @@ async function loadDictionary(){
     if(verEl)verEl.textContent=data.filter(r=>r.verified).length;
     list.innerHTML=data.map(e=>{
       const ia=localInteractions[e.id]||{};
-      return `<div class="entry-card">
+      return `<div class="entry-card" onclick="openDictionaryDetailV8('${e.id}')">
         <div class="ec-top">
           <div class="ec-name" style="font-size:17px;font-weight:700;">${esc(e.word||'')}</div>
           ${e.part_of_speech?`<div class="type-badge t-default">${esc(e.part_of_speech)}</div>`:''}
@@ -2133,11 +2341,12 @@ async function loadDictionary(){
         <div style="font-size:14px;color:var(--ink);margin-bottom:6px;">${esc(e.meaning||'')}</div>
         ${e.example_usage?`<div class="ec-snippet">${esc(e.example_usage)}</div>`:''}
         ${e.dialect||e.region?`<div class="ec-meta">${[e.dialect,e.region].filter(Boolean).map(esc).join(' · ')}</div>`:''}
+        ${e.source_name?`<div class="source-meta">Source: ${esc(e.source_name)}${e.source_url?` · <a href="${esc(e.source_url)}" target="_blank" onclick="event.stopPropagation()">link</a>`:''}</div>`:''}
         <div class="trust-row">${e.verified?'<span class="tbadge tb-verified">⭐ Verified</span>':e.status==='nominated'?'<span class="tbadge tb-nominated">⬆ Nominated</span>':'<span class="tbadge tb-community">Community</span>'}</div>
         <div class="ibar">
-          <button class="ib${ia.endorsed?' on-endorse':''}" onclick="endorse('${e.id}',this)">👍 <span>${(e.endorsements||0)+(ia.endorsed?1:0)}</span></button>
-          <button class="ib${ia.disputed?' on-dispute':''}" onclick="flagDispute('${e.id}',this)">⚑</button>
-          ${!e.verified?`<button class="ib${ia.nominated?' on-nominate':''}" onclick="nominateEntry('${e.id}','yoruba_dictionary',this)">⬆</button>`:''}
+          <button class="ib${ia.endorsed?' on-endorse':''}" onclick="event.stopPropagation();endorse('${e.id}',this)">👍 <span>${(e.endorsements||0)+(ia.endorsed?1:0)}</span></button>
+          <button class="ib${ia.disputed?' on-dispute':''}" onclick="event.stopPropagation();flagDispute('${e.id}',this)">⚑</button>
+          ${!e.verified?`<button class="ib${ia.nominated?' on-nominate':''}" onclick="event.stopPropagation();nominateEntry('${e.id}','yoruba_dictionary',this)">⬆</button>`:''}
           <div class="ib-spacer"></div>
           ${e.contributor_name?`<span style="font-size:11px;color:var(--ink3);">${esc(e.contributor_name)}</span>`:''}
         </div>
@@ -2984,6 +3193,752 @@ async function initFestivals() {
   renderFests();
 }
 
+
+// ================================================================
+// V8 STRUCTURED SOURCES / BACKEND VISIBILITY PATCH
+// ================================================================
+let sourcesSearch = '';
+
+function compactValue(v){
+  if(v === null || v === undefined || v === '') return '';
+  if(Array.isArray(v)) return v.length ? v.join(', ') : '';
+  if(typeof v === 'object') {
+    try { return JSON.stringify(v); } catch(e) { return String(v); }
+  }
+  return String(v);
+}
+
+function renderBackendFields(row, fields){
+  const cells = fields.map(([key,label]) => {
+    const val = compactValue(row ? row[key] : '');
+    if(!val) return '';
+    const safe = esc(val);
+    const display = key.toLowerCase().includes('url')
+      ? `<a href="${safe}" target="_blank" rel="noopener noreferrer">${safe}</a>`
+      : safe;
+    return `<div class="backend-cell"><div class="backend-label">${esc(label||key)}</div><div class="backend-value">${display}</div></div>`;
+  }).join('');
+  return cells ? `<div class="backend-grid">${cells}</div>` : '';
+}
+
+async function loadEntrySourcesV8(entryId, entryTable){
+  try{
+    const { data, error } = await db.from('entry_sources')
+      .select(`
+        id,
+        page_number,
+        quote_location,
+        extraction_note,
+        verified,
+        source_references (
+          id,
+          source_title,
+          source_author,
+          source_year,
+          source_publisher,
+          source_identifier,
+          source_url,
+          verification_status,
+          access_type,
+          notes
+        )
+      `)
+      .eq('entry_id', entryId)
+      .eq('entry_table', entryTable)
+      .order('created_at',{ascending:true});
+    if(error){ console.warn('Structured sources unavailable:', error.message); return []; }
+    return data || [];
+  }catch(e){ console.warn('Structured sources unavailable:', e.message); return []; }
+}
+
+function renderStructuredSourcesV8(rows){
+  if(!rows || !rows.length) return '';
+  return `<div class="d-block source-citations">
+    <div class="d-block-label">Structured sources</div>
+    ${rows.map(r=>{
+      const s = r.source_references || {};
+      const meta = [s.source_author, s.source_year ? `(${s.source_year})` : '', s.source_publisher, s.source_identifier].filter(Boolean).join(' · ');
+      const loc = [r.page_number ? `Page: ${r.page_number}` : '', r.quote_location].filter(Boolean).join(' · ');
+      return `<div class="source-card">
+        <div class="source-title">${esc(s.source_title || 'Untitled source')}${(r.verified || s.verification_status === 'verified_source') ? '<span class="source-badge">Verified</span>' : ''}</div>
+        ${meta?`<div class="source-meta">${esc(meta)}</div>`:''}
+        ${s.access_type?`<div class="source-meta">Access: ${esc(s.access_type)}</div>`:''}
+        ${loc?`<div class="source-meta">${esc(loc)}</div>`:''}
+        ${r.extraction_note?`<div class="source-meta">${esc(r.extraction_note)}</div>`:''}
+        ${s.notes?`<div class="source-meta">${esc(s.notes)}</div>`:''}
+        ${s.source_url?`<a class="source-link" href="${esc(s.source_url)}" target="_blank" rel="noopener noreferrer">View source</a>`:''}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderLegacySourceBlockV8(entry){
+  if(!entry || (!entry.source_name && !entry.source_url)) return '';
+  return `<div class="d-block" style="background:var(--blue-bg);">
+    <div class="d-block-label" style="color:var(--blue);">Legacy source fields</div>
+    <div class="trans-text">
+      ${entry.source_name ? esc(entry.source_name) : 'Source URL only'}
+      ${entry.source_url ? ` — <a href="${esc(entry.source_url)}" target="_blank" rel="noopener noreferrer" style="color:var(--blue);">link</a>` : ''}
+    </div>
+  </div>`;
+}
+
+function renderRecordMetadataV8(entry, fields){
+  const html = renderBackendFields(entry, fields);
+  return html ? `<div class="d-block"><div class="d-block-label">Backend metadata</div>${html}</div>` : '';
+}
+
+async function appendDetailProvenanceV8(entryTable, entryId, entry, targetId='detail-content'){
+  const target = document.getElementById(targetId);
+  if(!target || document.getElementById(`v8-source-${entryId}`)) return;
+  const rows = await loadEntrySourcesV8(entryId, entryTable);
+  const wrap = document.createElement('div');
+  wrap.id = `v8-source-${entryId}`;
+  wrap.innerHTML = renderStructuredSourcesV8(rows) + renderRecordMetadataV8(entry, [
+    ['id','Record ID'],['created_at','Created'],['status','Status'],['verified','Verified'],
+    ['nominated','Nominated'],['endorsements','Endorsements'],['disputes','Disputes'],
+    ['contributor_name','Contributor'],['user_id','User ID'],['audio_url','Audio URL'],
+    ['source_name','Legacy source'],['source_url','Legacy URL']
+  ]);
+  const commentsTitle = Array.from(target.querySelectorAll('.section-title')).find(el => (el.textContent||'').includes('Comments'));
+  if(commentsTitle) commentsTitle.before(wrap);
+  else target.appendChild(wrap);
+}
+
+// Patch Oriki detail so the new provenance layer is visible.
+const _v8OpenOrikiDetail = openOrikiDetail;
+openOrikiDetail = async function(id){
+  await _v8OpenOrikiDetail(id);
+  const { data:e } = await db.from('oriki_entries').select('*').eq('id',id).single();
+  if(e) await appendDetailProvenanceV8('oriki_entries', id, e);
+};
+
+// Standalone detail viewers for tables that currently render as cards.
+async function openOweDetailV8(id){
+  prevTab=document.querySelector('.tab.active').id.replace('tab-','');
+  showTab('detail');
+  const dc=document.getElementById('detail-content');
+  dc.innerHTML='<div class="state-msg">Loading proverb…</div>';
+  const {data:e,error}=await db.from('owe_entries').select('*').eq('id',id).single();
+  if(error||!e){dc.innerHTML='<div class="err">Could not load proverb.</div>';return;}
+  const sources=await loadEntrySourcesV8(id,'owe_entries');
+  dc.innerHTML=`
+    <div class="detail-title">Ọwẹ</div>
+    <div class="detail-meta-row">${e.verified?'<span class="tbadge tb-verified">⭐ Verified</span>':'<span class="tbadge tb-community">Community</span>'}${e.region?`<span style="font-size:11px;color:var(--ink3);">${esc(e.region)}</span>`:''}</div>
+    <div class="d-block"><div class="d-block-label">Proverb</div><div class="oriki-full">${esc(e.proverb).replace(/\n/g,'<br>')}</div></div>
+    ${e.literal_translation?`<div class="d-block"><div class="d-block-label">Literal translation</div><div class="trans-text">${esc(e.literal_translation)}</div></div>`:''}
+    ${e.meaning?`<div class="d-block"><div class="d-block-label">Meaning</div><div class="trans-text">${esc(e.meaning)}</div></div>`:''}
+    ${e.usage_context?`<div class="d-block"><div class="d-block-label">Usage context</div><div class="trans-text">${esc(e.usage_context)}</div></div>`:''}
+    ${renderLegacySourceBlockV8(e)}
+    ${renderStructuredSourcesV8(sources)}
+    ${renderRecordMetadataV8(e,[['id','Record ID'],['created_at','Created'],['town','Town'],['state','State'],['region','Region'],['status','Status'],['verified','Verified'],['nominated','Nominated'],['endorsements','Endorsements'],['disputes','Disputes'],['contributor_name','Contributor'],['user_id','User ID'],['audio_url','Audio URL'],['source_name','Legacy source'],['source_url','Legacy URL']])}
+  `;
+}
+
+async function openIjalaDetailV8(id){
+  prevTab=document.querySelector('.tab.active').id.replace('tab-','');
+  showTab('detail');
+  const dc=document.getElementById('detail-content');
+  dc.innerHTML='<div class="state-msg">Loading Ìjálá…</div>';
+  const {data:e,error}=await db.from('ijala_entries').select('*').eq('id',id).single();
+  if(error||!e){dc.innerHTML='<div class="err">Could not load Ìjálá entry.</div>';return;}
+  const sources=await loadEntrySourcesV8(id,'ijala_entries');
+  dc.innerHTML=`
+    <div class="detail-title">${esc(e.title)}</div>
+    <div class="detail-meta-row"><span class="type-badge t-hunter">Ìjálá</span>${e.verified?'<span class="tbadge tb-verified">⭐ Verified</span>':'<span class="tbadge tb-community">Community</span>'}</div>
+    ${e.audio_url?renderAudioPlayer(e.audio_url,'Recording'):''}
+    <div class="d-block"><div class="d-block-label">Yoruba text</div><div class="oriki-full">${esc(e.yoruba_text).replace(/\n/g,'<br>')}</div></div>
+    ${e.translation?`<div class="d-block"><div class="d-block-label">Translation</div><div class="trans-text">${esc(e.translation).replace(/\n/g,'<br>')}</div></div>`:''}
+    ${e.hunter_context?`<div class="d-block"><div class="d-block-label">Hunter context</div><div class="trans-text">${esc(e.hunter_context)}</div></div>`:''}
+    ${renderLegacySourceBlockV8(e)}
+    ${renderStructuredSourcesV8(sources)}
+    ${renderRecordMetadataV8(e,[['id','Record ID'],['created_at','Created'],['associated_animal','Associated animal'],['region','Region'],['town','Town'],['state','State'],['status','Status'],['verified','Verified'],['endorsements','Endorsements'],['disputes','Disputes'],['contributor_name','Contributor'],['user_id','User ID'],['audio_url','Audio URL'],['source_name','Legacy source'],['source_url','Legacy URL']])}
+  `;
+}
+
+async function openDictionaryDetailV8(id){
+  prevTab=document.querySelector('.tab.active').id.replace('tab-','');
+  showTab('detail');
+  const dc=document.getElementById('detail-content');
+  dc.innerHTML='<div class="state-msg">Loading dictionary entry…</div>';
+  const {data:e,error}=await db.from('yoruba_dictionary').select('*').eq('id',id).single();
+  if(error||!e){dc.innerHTML='<div class="err">Could not load dictionary entry.</div>';return;}
+  const sources=await loadEntrySourcesV8(id,'yoruba_dictionary');
+  dc.innerHTML=`
+    <div class="detail-title">${esc(e.word)}</div>
+    <div class="detail-meta-row">${e.part_of_speech?`<span class="type-badge t-default">${esc(e.part_of_speech)}</span>`:''}${e.verified?'<span class="tbadge tb-verified">⭐ Verified</span>':'<span class="tbadge tb-community">Community</span>'}</div>
+    <div class="d-block"><div class="d-block-label">Meaning</div><div class="trans-text">${esc(e.meaning)}</div></div>
+    ${e.tone_marks?`<div class="d-block"><div class="d-block-label">Tone marks</div><div class="trans-text">${esc(e.tone_marks)}</div></div>`:''}
+    ${e.example_usage?`<div class="d-block"><div class="d-block-label">Example usage</div><div class="oriki-full">${esc(e.example_usage)}</div></div>`:''}
+    ${renderLegacySourceBlockV8(e)}
+    ${renderStructuredSourcesV8(sources)}
+    ${renderRecordMetadataV8(e,[['id','Record ID'],['created_at','Created'],['origin_type','Origin type'],['region','Region'],['dialect','Dialect'],['access_tier','Access tier'],['status','Status'],['verified','Verified'],['endorsements','Endorsements'],['disputes','Disputes'],['audio_contributor_verified','Audio verified'],['contributor_code','Contributor code'],['contributor_name','Contributor'],['user_id','User ID'],['audio_url','Audio URL'],['source_name','Legacy source'],['source_url','Legacy URL']])}
+  `;
+}
+
+async function loadSourcesTabV8(){
+  const list=document.getElementById('sources-list');
+  if(!list)return;
+  list.innerHTML='<div class="state-msg">Loading sources…</div>';
+  try{
+    let q=db.from('source_references').select('*').order('created_at',{ascending:false});
+    if(sourcesSearch.trim()){
+      const s=sourcesSearch.trim();
+      q=q.or(`source_title.ilike.%${s}%,source_author.ilike.%${s}%,source_publisher.ilike.%${s}%,source_identifier.ilike.%${s}%`);
+    }
+    const {data,error}=await q;
+    if(error){list.innerHTML=`<div class="err">Source tables not available yet. Run the provenance migration first.<br>${esc(error.message)}</div>`;return;}
+    if(!data||!data.length){list.innerHTML='<div class="state-msg">No structured sources yet.</div>';return;}
+    list.innerHTML=data.map(s=>`
+      <div class="source-browser-card">
+        <div class="source-browser-title">${esc(s.source_title)}${s.verification_status==='verified_source'?'<span class="source-badge">Verified</span>':''}</div>
+        <div class="source-browser-meta">${[s.source_author,s.source_year?`(${s.source_year})`:'',s.source_publisher,s.source_identifier].filter(Boolean).map(esc).join(' · ')}</div>
+        ${s.notes?`<div class="source-browser-note">${esc(s.notes)}</div>`:''}
+        ${s.source_url?`<a class="source-link" href="${esc(s.source_url)}" target="_blank" rel="noopener noreferrer">View source</a>`:''}
+        ${renderBackendFields(s,[['id','Source ID'],['created_at','Created'],['verification_status','Verification'],['access_type','Access type']])}
+      </div>
+    `).join('');
+  }catch(e){list.innerHTML=`<div class="err">Could not load sources: ${esc(e.message)}</div>`;}
+}
+
+async function loadSourceStatsV8(){
+  try{
+    const {count:sc}=await db.from('source_references').select('*',{count:'exact',head:true});
+    if(sc!==null && document.getElementById('stat-sources'))document.getElementById('stat-sources').textContent=sc.toLocaleString();
+    const {count:ec}=await db.from('entry_sources').select('*',{count:'exact',head:true});
+    if(ec!==null && document.getElementById('stat-entry-sources'))document.getElementById('stat-entry-sources').textContent=ec.toLocaleString();
+    const {count:fc}=await db.from('source_references').select('*',{count:'exact',head:true}).eq('access_type','full_text');
+    if(fc!==null && document.getElementById('stat-fulltext'))document.getElementById('stat-fulltext').textContent=fc.toLocaleString();
+  }catch(e){
+    ['stat-sources','stat-entry-sources','stat-fulltext'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent='—';});
+  }
+}
+
+document.querySelector('.nb[data-tab="sources"]')?.addEventListener('click',()=>{loadSourcesTabV8();loadSourceStatsV8();});
+document.getElementById('sources-search-btn')?.addEventListener('click',()=>{sourcesSearch=document.getElementById('sources-search').value;loadSourcesTabV8();});
+document.getElementById('sources-search')?.addEventListener('keydown',e=>{if(e.key==='Enter'){sourcesSearch=e.target.value;loadSourcesTabV8();}});
+
+
+
+// ================================================================
+// V9 SOCIAL PIPELINE
+// ================================================================
+function orikiBaseUrlV9(){
+  return window.location.hostname === 'localhost' || window.location.protocol === 'file:'
+    ? 'https://oriki-iota.vercel.app'
+    : window.location.origin;
+}
+
+function socialEntryTitleV9(entry, table){
+  if(!entry) return 'Oriki Archive';
+  if(table === 'owe_entries') return entry.proverb || 'Yoruba proverb';
+  if(table === 'ijala_entries') return entry.title || 'Ìjálá chant';
+  if(table === 'yoruba_dictionary') return entry.word || 'Yoruba word';
+  if(table === 'festival_entries') return entry.name || entry.yoruba_name || 'Yoruba festival';
+  return entry.name || entry.title || 'Oriki Archive entry';
+}
+
+function socialEntryKindV9(table){
+  return ({
+    oriki_entries:'oríkì',
+    owe_entries:'òwe',
+    ijala_entries:'ìjálá',
+    yoruba_dictionary:'Yoruba dictionary word',
+    festival_entries:'Yoruba festival'
+  })[table] || 'archive entry';
+}
+
+function getSocialEntryUrlV9(entryId, table){
+  return `${orikiBaseUrlV9()}?entry=${encodeURIComponent(entryId)}&table=${encodeURIComponent(table)}&utm_source=social&utm_medium=share&utm_campaign=archive_entry`;
+}
+
+function buildSocialCaptionV9(entry, table){
+  const title = socialEntryTitleV9(entry, table);
+  const kind = socialEntryKindV9(table);
+  return `I found this ${kind} on the Oriki Archive:\n\n“${title}”\n\nDo you know a version, source, pronunciation, family link, or correction? Add it to help preserve Yoruba oral heritage.\n\n${getSocialEntryUrlV9(entry.id, table)}`;
+}
+
+function renderSocialKitV9(entry, table){
+  const caption = buildSocialCaptionV9(entry, table);
+  const url = getSocialEntryUrlV9(entry.id, table);
+  const encCaption = encodeURIComponent(caption);
+  const encUrl = encodeURIComponent(url);
+  const title = socialEntryTitleV9(entry, table);
+  const safeId = `social-caption-${entry.id}`;
+  const safeCardId = `social-card-preview-${entry.id}`;
+  return `<div class="social-kit" id="social-kit-${esc(entry.id)}">
+    <div class="social-kit-title">Share this ${esc(socialEntryKindV9(table))}</div>
+    <div class="social-kit-sub">Generate a beautiful image card, then share it with family, town associations, elders and friends to invite variants, corrections, audio, or source notes.</div>
+    <div class="social-caption" id="${safeId}">${esc(caption)}</div>
+    <div class="social-actions">
+      <button class="social-btn primary" onclick="shareCardToPlatformV11('${esc(entry.id)}','native',event)">Share</button>
+      <button class="social-btn copy" onclick="shareCardToPlatformV11('${esc(entry.id)}','card',event)">Card</button>
+      <button class="social-btn whatsapp" onclick="shareCardToPlatformV11('${esc(entry.id)}','whatsapp',event)">WhatsApp</button>
+      <button class="social-btn x" onclick="shareCardToPlatformV11('${esc(entry.id)}','x',event)">X</button>
+      <button class="social-btn copy" onclick="copySocialText('${safeId}')">Copy caption</button>
+      <button class="social-btn" onclick="showTab('submit')">Add what you know</button>
+    </div>
+    <div class="social-card-preview-wrap" id="${safeCardId}">
+      <img class="social-card-preview-img" id="${safeCardId}-img" alt="Generated share card preview"/>
+      <div class="social-card-tools">
+        <button class="social-btn copy" onclick="downloadSocialCardV10('${esc(entry.id)}')">⬇️ Download PNG</button>
+        <button class="social-btn primary" onclick="shareSocialCardV10('${esc(entry.id)}')">Share</button>
+      </div>
+      <div class="social-card-note">Tip: download the PNG and post it as an image on Instagram, TikTok, WhatsApp Status, X, Facebook, or Threads. The caption above includes the archive link.</div>
+    </div>
+  </div>`;
+}
+
+window.socialShareEntryCacheV10 = window.socialShareEntryCacheV10 || {};
+window.socialShareCardDataV10 = window.socialShareCardDataV10 || {};
+
+function appendSocialKitToDetailV9(entry, table, containerId){
+  const target = document.getElementById(containerId || (table === 'festival_entries' ? 'fest-detail-content' : 'detail-content'));
+  if(!target || !entry || document.getElementById(`social-kit-${entry.id}`)) return;
+  window.socialShareEntryCacheV10[entry.id] = { entry, table };
+  const div = document.createElement('div');
+  div.innerHTML = renderSocialKitV9(entry, table);
+  const firstComment = Array.from(target.querySelectorAll('.section-title')).find(el => (el.textContent||'').includes('Comments'));
+  if(firstComment) firstComment.before(div.firstElementChild);
+  else target.appendChild(div.firstElementChild);
+}
+
+function socialCardTextV10(entry, table){
+  if(!entry) return {title:'Oriki Archive', kind:'Archive entry', body:'', context:''};
+  if(table === 'owe_entries'){
+    const ctx = [
+      entry.literal_translation ? `Translation: ${entry.literal_translation}` : '',
+      entry.meaning ? `Meaning: ${entry.meaning}` : '',
+      entry.usage_context ? `Use: ${entry.usage_context}` : ''
+    ].filter(Boolean).join('  •  ');
+    return {
+      title:'Ọwẹ Yorùbá',
+      kind:'Yorùbá Proverb',
+      body:entry.proverb || '',
+      context:ctx
+    };
+  }
+  if(table === 'ijala_entries'){
+    return {
+      title:entry.title || 'Ìjálá',
+      kind:'Hunters’ Poetry',
+      body:entry.yoruba_text || '',
+      context:entry.translation || entry.hunter_context || entry.associated_animal || ''
+    };
+  }
+  if(table === 'yoruba_dictionary'){
+    return {
+      title:entry.word || 'Yorùbá Word',
+      kind:'Dictionary',
+      body:entry.tone_marks || entry.word || '',
+      context:entry.meaning || entry.example_usage || ''
+    };
+  }
+  if(table === 'festival_entries'){
+    return {
+      title:entry.name || entry.yoruba_name || 'Yorùbá Festival',
+      kind:'Odun / Festival',
+      body:entry.significance || entry.history || '',
+      context:[entry.town, entry.state, entry.month].filter(Boolean).join(' · ')
+    };
+  }
+  return {
+    title:entry.name || 'Oríkì',
+    kind:'Praise Poetry',
+    body:entry.yoruba_text || '',
+    context:entry.translation || entry.notes || [entry.town, entry.state, entry.kingdom].filter(Boolean).join(' · ')
+  };
+}
+
+function wrapCanvasTextV10(ctx, text, x, y, maxWidth, lineHeight, maxLines){
+  const clean = String(text || '').replace(/\s+/g,' ').trim();
+  if(!clean) return y;
+  const words = clean.split(' ');
+  let line = '';
+  let lines = [];
+  for(let i=0;i<words.length;i++){
+    const testLine = line ? line + ' ' + words[i] : words[i];
+    if(ctx.measureText(testLine).width > maxWidth && line){
+      lines.push(line);
+      line = words[i];
+      if(lines.length >= maxLines) break;
+    }else{
+      line = testLine;
+    }
+  }
+  if(line && lines.length < maxLines) lines.push(line);
+  if(lines.length === maxLines && words.join(' ').length > lines.join(' ').length){
+    lines[lines.length-1] = lines[lines.length-1].replace(/[.,;:!?]*$/,'') + '…';
+  }
+  lines.forEach(l => { ctx.fillText(l, x, y); y += lineHeight; });
+  return y;
+}
+
+function drawRoundedRectV10(ctx,x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function generateSocialCardV10(entryId){
+  const cached = window.socialShareEntryCacheV10[entryId];
+  if(!cached){ showFeedback('Open an entry first, then generate its card.', 'err'); return; }
+  const {entry, table} = cached;
+  const content = socialCardTextV10(entry, table);
+  const canvas = document.createElement('canvas');
+  canvas.width = 1080;
+  canvas.height = 1350;
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#FAFAF9';
+  ctx.fillRect(0,0,1080,1350);
+
+  // Decorative bands
+  ctx.fillStyle = '#3D1A0A';
+  ctx.fillRect(0,0,1080,190);
+  ctx.fillStyle = '#B5651D';
+  ctx.fillRect(0,190,1080,18);
+
+  // Header
+  ctx.fillStyle = '#FFFFFF';
+  ctx.font = '700 54px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+  ctx.fillText('Oriki Archive', 72, 92);
+  ctx.font = '400 27px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+  ctx.fillText('Yorùbá oral heritage, verified and shared', 72, 137);
+
+  // Card body
+  ctx.fillStyle = '#FFFFFF';
+  drawRoundedRectV10(ctx,72,270,936,760,34);
+
+  ctx.fillStyle = '#B5651D';
+  ctx.font = '700 30px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+  ctx.fillText(String(content.kind || '').toUpperCase(), 116, 340);
+
+  ctx.fillStyle = '#1C1917';
+  ctx.font = '700 58px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+  let y = wrapCanvasTextV10(ctx, content.title, 116, 420, 850, 68, 3);
+
+  ctx.fillStyle = '#B5651D';
+  ctx.fillRect(116, y + 14, 120, 6);
+  y += 80;
+
+  ctx.fillStyle = '#1C1917';
+  ctx.font = 'italic 46px Georgia, Times New Roman, serif';
+  y = wrapCanvasTextV10(ctx, content.body, 116, y, 850, 61, 7);
+
+  if(content.context){
+    y += 30;
+    ctx.fillStyle = '#57534E';
+    ctx.font = '400 30px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+    wrapCanvasTextV10(ctx, content.context, 116, y, 850, 42, 4);
+  }
+
+  // Footer CTA
+  ctx.fillStyle = '#FEF3C7';
+  drawRoundedRectV10(ctx,72,1088,936,150,28);
+  ctx.fillStyle = '#713F12';
+  ctx.font = '700 34px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+  ctx.fillText('Know a variant, correction, audio, or source?', 116, 1148);
+  ctx.font = '400 29px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+  ctx.fillText('Add it to the living archive: oriki-iota.vercel.app', 116, 1197);
+
+  ctx.fillStyle = '#A8A29E';
+  ctx.font = '400 24px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif';
+  ctx.fillText('Generated from Oriki Archive • Share to preserve Yorùbá memory', 72, 1295);
+
+  const dataUrl = canvas.toDataURL('image/png');
+  window.socialShareCardDataV10[entryId] = { dataUrl, title: content.title, caption: buildSocialCaptionV9(entry, table) };
+
+  const wrap = document.getElementById(`social-card-preview-${entryId}`);
+  const img = document.getElementById(`social-card-preview-${entryId}-img`);
+  if(img) img.src = dataUrl;
+  if(wrap) wrap.classList.add('show');
+  logSocialShareFromCacheV10(entryId, 'Image Card Generated');
+}
+
+function downloadSocialCardV10(entryId){
+  const data = window.socialShareCardDataV10[entryId];
+  if(!data){ generateSocialCardV10(entryId); }
+  const finalData = window.socialShareCardDataV10[entryId];
+  if(!finalData) return;
+  const a = document.createElement('a');
+  a.href = finalData.dataUrl;
+  a.download = `oriki-archive-card-${entryId}.png`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  logSocialShareFromCacheV10(entryId, 'PNG Download');
+}
+
+async function shareSocialCardV10(entryId){
+  const cached = window.socialShareEntryCacheV10[entryId];
+  if(!window.socialShareCardDataV10[entryId]) generateSocialCardV10(entryId);
+  const data = window.socialShareCardDataV10[entryId];
+  if(!data) return;
+
+  try{
+    const res = await fetch(data.dataUrl);
+    const blob = await res.blob();
+    const file = new File([blob], `oriki-archive-card-${entryId}.png`, {type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      await navigator.share({
+        files:[file],
+        title:data.title || 'Oriki Archive',
+        text:data.caption || 'Oriki Archive'
+      });
+      logSocialShareFromCacheV10(entryId, 'Native Image Share');
+    }else if(navigator.share){
+      await navigator.share({
+        title:data.title || 'Oriki Archive',
+        text:data.caption || 'Oriki Archive',
+        url: cached ? getSocialEntryUrlV9(cached.entry.id, cached.table) : orikiBaseUrlV9()
+      });
+      logSocialShareFromCacheV10(entryId, 'Native Link Share');
+    }else{
+      downloadSocialCardV10(entryId);
+      showFeedback('Image downloaded. Upload it to your social post or status.', 'ok');
+    }
+  }catch(e){
+    console.warn('Native share failed:', e);
+    downloadSocialCardV10(entryId);
+  }
+}
+
+function logSocialShareFromCacheV10(entryId, platform){
+  const cached = window.socialShareEntryCacheV10[entryId];
+  if(cached) logSocialShareV9(cached.entry, cached.table, platform);
+}
+
+async function copySocialText(elementId){
+  const el = document.getElementById(elementId);
+  const text = el ? (el.innerText || el.textContent || '') : '';
+  if(!text) return;
+  try{
+    await navigator.clipboard.writeText(text);
+    showFeedback('Social caption copied.', 'ok');
+  }catch(e){
+    const temp=document.createElement('textarea');
+    temp.value=text; document.body.appendChild(temp); temp.select();
+    document.execCommand('copy'); document.body.removeChild(temp);
+    showFeedback('Social caption copied.', 'ok');
+  }
+}
+
+
+// ================================================================
+// V11 SOCIAL CARD + PLATFORM SHARING
+// ================================================================
+function renderInlineSocialActionsV11(entry, table){
+  if(!entry || !entry.id) return '';
+  window.socialShareEntryCacheV10 = window.socialShareEntryCacheV10 || {};
+  window.socialShareEntryCacheV10[entry.id] = { entry, table };
+  return `<div class="social-inline-actions" onclick="event.stopPropagation();">
+    <button class="social-mini-btn card" data-tip="Generate this entry as a shareable image card" onclick="shareCardToPlatformV11('${esc(entry.id)}','card',event)">Card</button>
+    <button class="social-mini-btn wa" data-tip="Generate card and share/link through WhatsApp" onclick="shareCardToPlatformV11('${esc(entry.id)}','whatsapp',event)">WhatsApp</button>
+    <button class="social-mini-btn xbtn" data-tip="Generate card and share/link through X" onclick="shareCardToPlatformV11('${esc(entry.id)}','x',event)">X</button>
+    <button class="social-mini-btn share" data-tip="Generate card and use your device share sheet" onclick="shareCardToPlatformV11('${esc(entry.id)}','native',event)">Share</button>
+  </div>`;
+}
+
+async function dataUrlToFileV11(dataUrl, entryId){
+  const res = await fetch(dataUrl);
+  const blob = await res.blob();
+  return new File([blob], `oriki-archive-card-${entryId}.png`, {type:'image/png'});
+}
+
+async function shareCardToPlatformV11(entryId, platform, event){
+  if(event) event.stopPropagation();
+  const cached = window.socialShareEntryCacheV10?.[entryId];
+  if(!cached){ showFeedback('Could not find this entry for sharing.', 'err'); return; }
+
+  if(!window.socialShareCardDataV10?.[entryId]) generateSocialCardV10(entryId);
+  const data = window.socialShareCardDataV10?.[entryId];
+  if(!data){ showFeedback('Could not generate share card.', 'err'); return; }
+
+  const url = getSocialEntryUrlV9(cached.entry.id, cached.table);
+  const caption = data.caption || buildSocialCaptionV9(cached.entry, cached.table);
+  const title = data.title || socialEntryTitleV9(cached.entry, cached.table);
+
+  // Native share: best path because it can include image + text + link on supported devices.
+  async function tryNativeShare(){
+    if(!navigator.share) return false;
+    try{
+      const file = await dataUrlToFileV11(data.dataUrl, entryId);
+      if(navigator.canShare && navigator.canShare({files:[file]})){
+        await navigator.share({files:[file], title, text:caption, url});
+        logSocialShareFromCacheV10(entryId, platform === 'native' ? 'Native Share with Card' : `${platform} Card Share Attempt`);
+        return true;
+      }
+      await navigator.share({title, text:caption, url});
+      logSocialShareFromCacheV10(entryId, platform === 'native' ? 'Native Link Share' : `${platform} Link Share Attempt`);
+      return true;
+    }catch(e){
+      console.warn('Native share was cancelled or failed:', e);
+      return false;
+    }
+  }
+
+  if(platform === 'native'){
+    const ok = await tryNativeShare();
+    if(!ok){
+      downloadSocialCardV10(entryId);
+      showFeedback('Card downloaded. Share it anywhere with the copied/archive link.', 'ok');
+    }
+    return;
+  }
+
+  if(platform === 'card'){
+    downloadSocialCardV10(entryId);
+    try{ await navigator.clipboard.writeText(`${caption}\n\n${url}`); }catch(e){}
+    showFeedback('Image card downloaded and share caption/link prepared.', 'ok');
+    return;
+  }
+
+  // Platform web intents cannot reliably attach a locally generated image.
+  // So we generate/download the card, then open the platform composer with the link/caption.
+  downloadSocialCardV10(entryId);
+  const encCaption = encodeURIComponent(caption);
+  const encUrl = encodeURIComponent(url);
+  if(platform === 'whatsapp'){
+    window.open(`https://wa.me/?text=${encCaption}`, '_blank', 'noopener');
+    logSocialShareFromCacheV10(entryId, 'WhatsApp Card + Link');
+    return;
+  }
+  if(platform === 'x'){
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(caption)}&url=${encUrl}`, '_blank', 'noopener');
+    logSocialShareFromCacheV10(entryId, 'X Card + Link');
+    return;
+  }
+}
+
+async function submitSocialLead(){
+  const msg = document.getElementById('social-submit-msg');
+  const payload = {
+    platform: document.getElementById('social-platform')?.value || 'Other',
+    social_url: document.getElementById('social-url')?.value.trim() || null,
+    poster_handle: document.getElementById('social-handle')?.value.trim() || null,
+    content_type: document.getElementById('social-content-type')?.value || 'unknown',
+    yoruba_text: document.getElementById('social-text')?.value.trim() || null,
+    notes: document.getElementById('social-notes')?.value.trim() || null,
+    contributor_name: document.getElementById('social-contributor')?.value.trim() || 'Anonymous',
+    status: 'new',
+    source_name: 'Social media lead',
+    source_url: document.getElementById('social-url')?.value.trim() || null,
+    user_id: currentUser ? currentUser.id : null
+  };
+
+  if(!payload.social_url && !payload.yoruba_text){
+    if(msg) msg.innerHTML='<div class="err">Add either a source URL/source note or pasted text.</div>';
+    return;
+  }
+
+  try{
+    const { error } = await db.from('social_inbox').insert([payload]);
+    if(error) throw error;
+    if(msg) msg.innerHTML='<div class="ok">Social lead saved for review.</div>';
+    ['social-url','social-handle','social-text','social-notes'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';});
+    loadSocialStatsV9();
+  }catch(e){
+    if(msg) msg.innerHTML=`<div class="err">Could not save social lead. Run the social migration first. ${esc(e.message || '')}</div>`;
+  }
+}
+
+async function logSocialShareV9(entry, table, platform){
+  try{
+    await db.from('social_shares').insert([{
+      entry_table: table,
+      entry_id: entry.id,
+      platform,
+      share_url: getSocialEntryUrlV9(entry.id, table),
+      share_text: buildSocialCaptionV9(entry, table),
+      contributor_name: currentUser?.email || null,
+      user_id: currentUser ? currentUser.id : null
+    }]);
+  }catch(e){
+    console.warn('Share log unavailable:', e.message);
+  }
+}
+
+async function loadSocialStatsV9(){
+  const set=(id,val)=>{const el=document.getElementById(id); if(el) el.textContent = val == null ? '—' : Number(val).toLocaleString();};
+  try{
+    const { count:inbox } = await db.from('social_inbox').select('*',{count:'exact',head:true});
+    set('stat-social-inbox', inbox);
+  }catch(e){ set('stat-social-inbox', null); }
+  try{
+    const { count:shares } = await db.from('social_shares').select('*',{count:'exact',head:true});
+    set('stat-social-shares', shares);
+  }catch(e){ set('stat-social-shares', null); }
+  try{
+    const { count:links } = await db.from('entry_sources').select('*',{count:'exact',head:true}).eq('verified',true);
+    set('stat-social-verified', links);
+  }catch(e){ set('stat-social-verified', null); }
+}
+
+function initSocialGeneralLinksV9(){
+  const captionEl = document.getElementById('social-general-caption');
+  const text = captionEl ? (captionEl.innerText || captionEl.textContent || '') : '';
+  const url = `${orikiBaseUrlV9()}?utm_source=social&utm_medium=share&utm_campaign=general`;
+  const wa = document.getElementById('social-general-wa');
+  const x = document.getElementById('social-general-x');
+  const fb = document.getElementById('social-general-fb');
+  if(wa) wa.href = `https://wa.me/?text=${encodeURIComponent(text)}`;
+  if(x) x.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent('Search your family, town, lineage, proverb or Yoruba word on the Oriki Archive.')}&url=${encodeURIComponent(url)}`;
+  if(fb) fb.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`;
+}
+
+document.querySelector('.nb[data-tab="social"]')?.addEventListener('click',()=>{loadSocialStatsV9();initSocialGeneralLinksV9();});
+
+// Patch detail views to show the social share kit everywhere.
+const _socialOpenOrikiDetailV9 = openOrikiDetail;
+openOrikiDetail = async function(id){
+  await _socialOpenOrikiDetailV9(id);
+  const { data:e } = await db.from('oriki_entries').select('*').eq('id',id).single();
+  if(e) appendSocialKitToDetailV9(e,'oriki_entries');
+};
+
+if(typeof openOweDetailV8 === 'function'){
+  const _socialOpenOweDetailV9 = openOweDetailV8;
+  openOweDetailV8 = async function(id){
+    await _socialOpenOweDetailV9(id);
+    const { data:e } = await db.from('owe_entries').select('*').eq('id',id).single();
+    if(e) appendSocialKitToDetailV9(e,'owe_entries');
+  };
+}
+
+if(typeof openIjalaDetailV8 === 'function'){
+  const _socialOpenIjalaDetailV9 = openIjalaDetailV8;
+  openIjalaDetailV8 = async function(id){
+    await _socialOpenIjalaDetailV9(id);
+    const { data:e } = await db.from('ijala_entries').select('*').eq('id',id).single();
+    if(e) appendSocialKitToDetailV9(e,'ijala_entries');
+  };
+}
+
+if(typeof openDictionaryDetailV8 === 'function'){
+  const _socialOpenDictionaryDetailV9 = openDictionaryDetailV8;
+  openDictionaryDetailV8 = async function(id){
+    await _socialOpenDictionaryDetailV9(id);
+    const { data:e } = await db.from('yoruba_dictionary').select('*').eq('id',id).single();
+    if(e) appendSocialKitToDetailV9(e,'yoruba_dictionary');
+  };
+}
+
+loadSocialStatsV9();
+initSocialGeneralLinksV9();
+
+
+
 // ── Init ───────────────────────────────────────────────────────
 loadOriki();
 loadLearnAudio();
@@ -2991,6 +3946,7 @@ loadOriki();
 loadOwe();
 loadIjala();
 loadStats();
+loadSourceStatsV8();
 loadDictStats();
 initFestivals();
 </script>
